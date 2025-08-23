@@ -25,10 +25,46 @@ const STEPS: { key: Step; title: string; icon: any }[] = [
 ]
 
 const MODELS = [
-  { id: "model-1", name: "Aria", type: "Female" },
-  { id: "model-2", name: "Marcus", type: "Male" },
-  { id: "model-3", name: "Luna", type: "Female" },
-  { id: "model-4", name: "Kai", type: "Male" },
+  { id: "model-1", name: "Kasun", type: "Male", image: "/models/kasun.jpg" },
+  { id: "model-2", name: "Dinesh", type: "Male", image: "/models/dinesh.jpg" },
+  { id: "model-3", name: "Priyanka", type: "Female", image: "/models/priyanka.jpg" },
+  { id: "model-4", name: "Sanduni", type: "Female", image: "/models/sanduni.jpg" },
+  { id: "model-5", name: "Chamara", type: "Male", image: "/models/chamara.jpg" },
+  { id: "model-6", name: "Thilini", type: "Female", image: "/models/thilini.jpg" },
+  { id: "model-7", name: "Ravindu", type: "Male", image: "/models/ravindu.jpg" },
+  { id: "model-8", name: "Nimali", type: "Female", image: "/models/nimali.jpg" },
+  { id: "model-9", name: "Kavitha", type: "Female", image: "/models/kavitha.jpg" },
+  { id: "model-10", name: "Ishara", type: "Female", image: "/models/ishara.jpg" },
+  { id: "model-11", name: "Malini", type: "Female", image: "/models/malini.jpg" },
+  { id: "model-12", name: "Asanka", type: "Male", image: "/models/asanka.jpg" },
+  { id: "model-13", name: "Dilani", type: "Female", image: "/models/dilani.jpg" },
+  { id: "model-14", name: "Nuwan", type: "Male", image: "/models/nuwan.jpg" },
+  { id: "model-15", name: "Roshan", type: "Male", image: "/models/roshan.jpg" },
+  { id: "model-16", name: "Sachini", type: "Female", image: "/models/sachini.jpg" },
+  { id: "model-17", name: "Amaya", type: "Female", image: "/models/amaya.jpg" },
+  { id: "model-18", name: "Tharindu", type: "Male", image: "/models/tharindu.jpg" },
+  { id: "model-19", name: "Nayomi", type: "Female", image: "/models/nayomi.jpg" },
+  { id: "model-20", name: "Rashika", type: "Female", image: "/models/rashika.jpg" },
+  { id: "model-21", name: "Lahiru", type: "Male", image: "/models/lahiru.jpg" },
+  { id: "model-22", name: "Janith", type: "Male", image: "/models/janith.jpg" },
+  { id: "model-23", name: "Dilan", type: "Male", image: "/models/dilan.jpg" },
+  { id: "model-24", name: "Sahan", type: "Male", image: "/models/sahan.jpg" },
+  { id: "model-25", name: "Kamal", type: "Male", image: "/models/kamal.jpg" },
+  { id: "model-26", name: "Ruwan", type: "Male", image: "/models/ruwan.jpg" },
+  { id: "model-27", name: "Chathurika", type: "Female", image: "/models/chathurika.jpg" },
+  { id: "model-28", name: "Dilhani", type: "Female", image: "/models/dilhani.jpg" },
+  { id: "model-29", name: "Ashan", type: "Male", image: "/models/ashan.jpg" },
+  { id: "model-30", name: "Supun", type: "Male", image: "/models/supun.jpg" },
+  { id: "model-31", name: "Yashodha", type: "Female", image: "/models/yashodha.jpg" },
+  { id: "model-32", name: "Mahesh", type: "Male", image: "/models/mahesh.jpg" },
+  { id: "model-33", name: "Samadhi", type: "Female", image: "/models/samadhi.jpg" },
+  { id: "model-34", name: "Menaka", type: "Female", image: "/models/menaka.jpg" },
+  { id: "model-35", name: "Buddhika", type: "Male", image: "/models/buddhika.jpg" },
+  { id: "model-36", name: "Yamuna", type: "Female", image: "/models/yamuna.jpg" },
+  { id: "model-37", name: "Viraj", type: "Male", image: "/models/viraj.jpg" },
+  { id: "model-38", name: "Gayan", type: "Male", image: "/models/gayan.jpg" },
+  { id: "model-39", name: "Hiruni", type: "Female", image: "/models/hiruni.jpg" },
+  { id: "model-40", name: "Chathura", type: "Male", image: "/models/chathura.jpg" },
 ]
 
 const ENVIRONMENTS = [
@@ -135,7 +171,7 @@ export default function HerveStudioDashboard() {
     switch (currentStep) {
       case "model":
         return (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {MODELS.map((model) => (
               <Card
                 key={model.id}
@@ -145,11 +181,11 @@ export default function HerveStudioDashboard() {
                 onClick={() => setSelectedModel(model.id)}
               >
                 <CardContent className="p-4">
-                  <div className="aspect-[3/4] bg-muted rounded-lg mb-3 flex items-center justify-center">
+                  <div className="aspect-[3/4] bg-muted rounded-lg mb-3 overflow-hidden">
                     <img
-                      src={`/placeholder-h3k4r.png?height=200&width=150&query=AI fashion model ${model.name} ${model.type}`}
+                      src={model.image || "/placeholder.svg"}
                       alt={model.name}
-                      className="w-full h-full object-cover rounded-lg"
+                      className="w-full h-full object-cover object-top"
                     />
                   </div>
                   <h3 className="font-semibold text-sm">{model.name}</h3>
