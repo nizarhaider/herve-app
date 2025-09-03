@@ -4,13 +4,12 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, Sparkles, Camera, Palette, Shirt } from "lucide-react"
+import { Loader2, Sparkles, Camera, Shirt } from "lucide-react"
 
-type Step = "model" | "environment" | "pose" | "clothing"
+type Step = "model" | "pose" | "clothing"
 type Generation = {
   id: string
   model: string
-  environment: string
   poses: string[]
   clothing: string[]
   imageUrl: string
@@ -19,39 +18,31 @@ type Generation = {
 
 const STEPS: { key: Step; title: string; icon: any }[] = [
   { key: "model", title: "Select Model", icon: Camera },
-  { key: "environment", title: "Select Environment", icon: Palette },
   { key: "pose", title: "Select Pose(s)", icon: Sparkles },
   { key: "clothing", title: "Select Clothing", icon: Shirt },
 ]
 
 const MODELS = [
-  { id: "model-1", name: "Kasun", type: "Male", image: "/models/kasun.jpg" },
-  { id: "model-2", name: "Ishara", type: "Male", image: "/models/ishara.jpg" },
-  { id: "model-3", name: "Sanduni", type: "Female", image: "/models/sanduni.jpg" },
-  { id: "model-4", name: "Chamara", type: "Male", image: "/models/chamara.jpg" },
-  { id: "model-5", name: "Dinesh", type: "Male", image: "/models/dinesh.jpg" },
-  { id: "model-6", name: "Priyanka", type: "Female", image: "/models/priyanka.jpg" },
-  { id: "model-7", name: "Thilini", type: "Female", image: "/models/thilini.jpg" },
-  { id: "model-8", name: "Nimali", type: "Female", image: "/models/nimali.jpg" },
-  { id: "model-9", name: "Ravindu", type: "Female", image: "/models/ravindu.jpg" },
-  { id: "model-10", name: "Kavitha", type: "Male", image: "/models/kavitha.jpg" },
-  { id: "model-11", name: "Malini", type: "Female", image: "/models/malini.jpg" },
-  { id: "model-12", name: "Asanka", type: "Female", image: "/models/asanka.jpg" },
-  { id: "model-13", name: "Dilani", type: "Female", image: "/models/dilani.jpg" },
-  { id: "model-14", name: "Nuwan", type: "Female", image: "/models/nuwan.jpg" },
-  { id: "model-15", name: "Roshan", type: "Male", image: "/models/roshan.jpg" },
-  { id: "model-16", name: "Sachini", type: "Female", image: "/models/sachini.jpg" },
-  { id: "model-17", name: "Amaya", type: "Female", image: "/models/amaya.jpg" },
-  { id: "model-18", name: "Tharindu", type: "Male", image: "/models/tharindu.jpg" },
-  { id: "model-19", name: "Nayomi", type: "Male", image: "/models/nayomi.jpg" },
-  { id: "model-20", name: "Rashika", type: "Female", image: "/models/rashika.jpg" },
-]
-
-const ENVIRONMENTS = [
-  { id: "env-1", name: "Studio White", type: "Minimal" },
-  { id: "env-2", name: "Urban Street", type: "Outdoor" },
-  { id: "env-3", name: "Luxury Interior", type: "Indoor" },
-  { id: "env-4", name: "Natural Light", type: "Studio" },
+  { id: "model-1", name: "Kasun", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/kasun.jpg" },
+  { id: "model-2", name: "Ishara", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/ishara.jpg" },
+  { id: "model-3", name: "Sanduni", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/sanduni.jpg" },
+  { id: "model-4", name: "Chamara", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/chamara.jpg" },
+  { id: "model-5", name: "Dinesh", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/dinesh.jpg" },
+  { id: "model-6", name: "Priyanka", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/priyanka.jpg" },
+  { id: "model-7", name: "Thilini", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/thilini.jpg" },
+  { id: "model-8", name: "Nimali", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/nimali.jpg" },
+  { id: "model-9", name: "Ravindu", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/ravindu.jpg" },
+  { id: "model-10", name: "Kavitha", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/kavitha.jpg" },
+  { id: "model-11", name: "Malini", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/malini.jpg" },
+  { id: "model-12", name: "Asanka", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/asanka.jpg" },
+  { id: "model-13", name: "Dilani", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/dilani.jpg" },
+  { id: "model-14", name: "Nuwan", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/nuwan.jpg" },
+  { id: "model-15", name: "Roshan", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/roshan.jpg" },
+  { id: "model-16", name: "Sachini", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/sachini.jpg" },
+  { id: "model-17", name: "Amaya", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/amaya.jpg" },
+  { id: "model-18", name: "Tharindu", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/tharindu.jpg" },
+  { id: "model-19", name: "Nayomi", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/nayomi.jpg" },
+  { id: "model-20", name: "Rashika", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/rashika.jpg" },
 ]
 
 const POSES = [
@@ -73,9 +64,8 @@ const CLOTHING = [
 export default function HerveStudioDashboard() {
   const [currentStep, setCurrentStep] = useState<Step>("model")
   const [selectedModel, setSelectedModel] = useState<string>("")
-  const [selectedEnvironment, setSelectedEnvironment] = useState<string>("")
   const [selectedPoses, setSelectedPoses] = useState<string[]>([])
-  const [selectedClothing, setSelectedClothing] = useState<string[]>([])
+  const [selectedClothing, setSelectedClothing] = useState<string>("")
   const [isGenerating, setIsGenerating] = useState(false)
   const [generations, setGenerations] = useState<Generation[]>([])
 
@@ -85,12 +75,10 @@ export default function HerveStudioDashboard() {
     switch (currentStep) {
       case "model":
         return selectedModel !== ""
-      case "environment":
-        return selectedEnvironment !== ""
       case "pose":
         return selectedPoses.length > 0
       case "clothing":
-        return selectedClothing.length > 0
+        return selectedClothing !== ""
       default:
         return false
     }
@@ -113,27 +101,23 @@ export default function HerveStudioDashboard() {
   const handleGenerate = async () => {
     setIsGenerating(true)
 
-    // Mock API call
     await new Promise((resolve) => setTimeout(resolve, 3000))
 
     const newGeneration: Generation = {
       id: `gen-${Date.now()}`,
       model: MODELS.find((m) => m.id === selectedModel)?.name || "",
-      environment: ENVIRONMENTS.find((e) => e.id === selectedEnvironment)?.name || "",
       poses: selectedPoses.map((id) => POSES.find((p) => p.id === id)?.name || ""),
-      clothing: selectedClothing.map((id) => CLOTHING.find((c) => c.id === id)?.name || ""),
-      imageUrl: `/placeholder.svg?height=400&width=300&query=AI fashion model wearing ${selectedClothing.map((id) => CLOTHING.find((c) => c.id === id)?.name).join(" and ")}`,
+  clothing: selectedClothing ? [CLOTHING.find((c) => c.id === selectedClothing)?.name || ""] : [],
+  imageUrl: `/placeholder.svg?height=400&width=300&query=AI fashion model wearing ${CLOTHING.find((c) => c.id === selectedClothing)?.name || ""}`,
       createdAt: new Date(),
     }
 
     setGenerations((prev) => [newGeneration, ...prev])
     setIsGenerating(false)
 
-    // Reset selections
     setSelectedModel("")
-    setSelectedEnvironment("")
     setSelectedPoses([])
-    setSelectedClothing([])
+  setSelectedClothing("")
     setCurrentStep("model")
   }
 
@@ -142,9 +126,7 @@ export default function HerveStudioDashboard() {
   }
 
   const toggleClothing = (clothingId: string) => {
-    setSelectedClothing((prev) =>
-      prev.includes(clothingId) ? prev.filter((id) => id !== clothingId) : [...prev, clothingId],
-    )
+  setSelectedClothing((prev) => (prev === clothingId ? "" : clothingId))
   }
 
   const renderStepContent = () => {
@@ -178,35 +160,6 @@ export default function HerveStudioDashboard() {
           </div>
         )
 
-      case "environment":
-        return (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {ENVIRONMENTS.map((env) => (
-              <Card
-                key={env.id}
-                className={`cursor-pointer transition-all hover:shadow-lg ${
-                  selectedEnvironment === env.id ? "ring-2 ring-primary bg-accent/10" : ""
-                }`}
-                onClick={() => setSelectedEnvironment(env.id)}
-              >
-                <CardContent className="p-4">
-                  <div className="aspect-video bg-muted rounded-lg mb-3 flex items-center justify-center">
-                    <img
-                      src={`/abstract-geometric-shapes.png?height=120&width=200&query=${env.name} photography background`}
-                      alt={env.name}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                  </div>
-                  <h3 className="font-semibold text-sm">{env.name}</h3>
-                  <Badge variant="secondary" className="text-xs">
-                    {env.type}
-                  </Badge>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )
-
       case "pose":
         return (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -221,7 +174,18 @@ export default function HerveStudioDashboard() {
                 <CardContent className="p-4">
                   <div className="aspect-[3/4] bg-muted rounded-lg mb-3 flex items-center justify-center">
                     <img
-                      src={`/fashion-model.png?height=160&width=120&query=fashion model ${pose.name} pose`}
+                      src={(() => {
+                        const poseImages = [
+                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose1.jpg",
+                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose2.jpg",
+                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose3.jpg",
+                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose4.jpg",
+                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose5.jpg",
+                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose6.jpg"
+                        ];
+                        const idx = POSES.findIndex(p => p.id === pose.id);
+                        return poseImages[idx] || "/poses/1L9A2953.webp";
+                      })()}
                       alt={pose.name}
                       className="w-full h-full object-cover rounded-lg"
                     />
@@ -241,14 +205,23 @@ export default function HerveStudioDashboard() {
               <Card
                 key={item.id}
                 className={`cursor-pointer transition-all hover:shadow-lg ${
-                  selectedClothing.includes(item.id) ? "ring-2 ring-primary bg-accent/10" : ""
+                  selectedClothing === item.id ? "ring-2 ring-primary bg-accent/10" : ""
                 }`}
                 onClick={() => toggleClothing(item.id)}
               >
                 <CardContent className="p-4">
                   <div className="aspect-square bg-muted rounded-lg mb-3 flex items-center justify-center">
                     <img
-                      src={`/abstract-geometric-shapes.png?height=120&width=120&query=${item.name} clothing item`}
+                      src={(() => {
+                        const clothingImages = [
+                          "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpg",
+                          "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing2.jpg",
+                          "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing3.jpg",
+                          "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing4.jpg"
+                        ];
+                        const idx = CLOTHING.findIndex(c => c.id === item.id);
+                        return clothingImages[idx] || "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpg";
+                      })()}
                       alt={item.name}
                       className="w-full h-full object-cover rounded-lg"
                     />
@@ -257,7 +230,7 @@ export default function HerveStudioDashboard() {
                   <Badge variant="secondary" className="text-xs">
                     {item.type}
                   </Badge>
-                  {selectedClothing.includes(item.id) && <Badge className="text-xs mt-1">Selected</Badge>}
+                  {selectedClothing === item.id && <Badge className="text-xs mt-1">Selected</Badge>}
                 </CardContent>
               </Card>
             ))}
@@ -268,7 +241,6 @@ export default function HerveStudioDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b bg-card">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -285,7 +257,6 @@ export default function HerveStudioDashboard() {
       </header>
 
       <div className="container mx-auto px-6 py-8">
-        {/* Step Progress */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             {STEPS.map((step, index) => {
@@ -314,9 +285,7 @@ export default function HerveStudioDashboard() {
           </div>
         </div>
 
-        {/* Main Content */}
         <div className="grid grid-cols-1 gap-8">
-          {/* Generation Wizard */}
           <div className="w-full">
             <Card>
               <CardHeader>
@@ -329,7 +298,6 @@ export default function HerveStudioDashboard() {
               <CardContent>
                 {renderStepContent()}
 
-                {/* Navigation */}
                 <div className="flex justify-between mt-8">
                   <Button variant="outline" onClick={handlePrevious} disabled={getCurrentStepIndex() === 0}>
                     Previous
@@ -357,7 +325,6 @@ export default function HerveStudioDashboard() {
           </div>
         </div>
 
-        {/* Previous Generations */}
         {generations.length > 0 && (
           <div className="mt-12">
             <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: "var(--font-work-sans)" }}>
@@ -378,10 +345,6 @@ export default function HerveStudioDashboard() {
                       <div>
                         <span className="text-xs text-muted-foreground">Model:</span>
                         <p className="text-sm font-medium">{generation.model}</p>
-                      </div>
-                      <div>
-                        <span className="text-xs text-muted-foreground">Environment:</span>
-                        <p className="text-sm">{generation.environment}</p>
                       </div>
                       <div>
                         <span className="text-xs text-muted-foreground">Poses:</span>
