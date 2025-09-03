@@ -23,26 +23,26 @@ const STEPS: { key: Step; title: string; icon: any }[] = [
 ]
 
 const MODELS = [
-  { id: "model-1", name: "Kasun", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/kasun.jpg" },
-  { id: "model-2", name: "Ishara", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/ishara.jpg" },
-  { id: "model-3", name: "Sanduni", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/sanduni.jpg" },
-  { id: "model-4", name: "Chamara", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/chamara.jpg" },
-  { id: "model-5", name: "Dinesh", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/dinesh.jpg" },
-  { id: "model-6", name: "Priyanka", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/priyanka.jpg" },
-  { id: "model-7", name: "Thilini", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/thilini.jpg" },
-  { id: "model-8", name: "Nimali", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/nimali.jpg" },
-  { id: "model-9", name: "Ravindu", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/ravindu.jpg" },
-  { id: "model-10", name: "Kavitha", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/kavitha.jpg" },
-  { id: "model-11", name: "Malini", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/malini.jpg" },
-  { id: "model-12", name: "Asanka", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/asanka.jpg" },
-  { id: "model-13", name: "Dilani", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/dilani.jpg" },
-  { id: "model-14", name: "Nuwan", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/nuwan.jpg" },
-  { id: "model-15", name: "Roshan", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/roshan.jpg" },
-  { id: "model-16", name: "Sachini", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/sachini.jpg" },
-  { id: "model-17", name: "Amaya", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/amaya.jpg" },
-  { id: "model-18", name: "Tharindu", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/tharindu.jpg" },
-  { id: "model-19", name: "Nayomi", type: "Male", image: "https://herve-studio-prod.s3.amazonaws.com/models/nayomi.jpg" },
-  { id: "model-20", name: "Rashika", type: "Female", image: "https://herve-studio-prod.s3.amazonaws.com/models/rashika.jpg" },
+  { id: "model-1", name: "Kasun", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/kasun.jpg" },
+  { id: "model-2", name: "Ishara", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/ishara.jpg" },
+  { id: "model-3", name: "Sanduni", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/sanduni.jpg" },
+  { id: "model-4", name: "Chamara", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/chamara.jpg" },
+  { id: "model-5", name: "Dinesh", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/dinesh.jpg" },
+  { id: "model-6", name: "Priyanka", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/priyanka.jpg" },
+  { id: "model-7", name: "Thilini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/thilini.jpg" },
+  { id: "model-8", name: "Nimali", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/nimali.jpg" },
+  { id: "model-9", name: "Ravindu", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/ravindu.jpg" },
+  { id: "model-10", name: "Kavitha", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/kavitha.jpg" },
+  { id: "model-11", name: "Malini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/malini.jpg" },
+  { id: "model-12", name: "Asanka", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/asanka.jpg" },
+  { id: "model-13", name: "Dilani", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/dilani.jpg" },
+  { id: "model-14", name: "Nuwan", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/nuwan.jpg" },
+  { id: "model-15", name: "Roshan", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/roshan.jpg" },
+  { id: "model-16", name: "Sachini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/sachini.jpg" },
+  { id: "model-17", name: "Amaya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/amaya.jpg" },
+  { id: "model-18", name: "Tharindu", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/tharindu.jpg" },
+  { id: "model-19", name: "Nayomi", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/nayomi.jpg" },
+  { id: "model-20", name: "Rashika", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/rashika.jpg" },
 ]
 
 const POSES = [
@@ -68,6 +68,24 @@ export default function HerveStudioDashboard() {
   const [selectedClothing, setSelectedClothing] = useState<string>("")
   const [isGenerating, setIsGenerating] = useState(false)
   const [generations, setGenerations] = useState<Generation[]>([])
+  const [taskId, setTaskId] = useState<string>("")
+  const [taskStatus, setTaskStatus] = useState<string>("")
+  const [showLoading, setShowLoading] = useState(false)
+
+  // Helper: get S3 URLs for selected model and pose
+  const getModelImageUrl = () => MODELS.find((m) => m.id === selectedModel)?.image || ""
+  const getPoseImageUrl = () => {
+    const poseImages = [
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose1.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose2.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose3.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose4.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose5.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose6.webp"
+    ];
+    const idx = POSES.findIndex(p => p.id === selectedPoses[0]);
+    return poseImages[idx] || poseImages[0];
+  }
 
   const getCurrentStepIndex = () => STEPS.findIndex((step) => step.key === currentStep)
 
@@ -84,8 +102,107 @@ export default function HerveStudioDashboard() {
     }
   }
 
+  // API: Poll task status
+  const pollTaskStatus = async (taskId: string) => {
+    let status = "RUNNING"
+    
+    while (status === "RUNNING" || status === "QUEUED") {
+      try {
+        const res = await fetch("https://www.runninghub.ai/task/openapi/status", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Host": "www.runninghub.ai"
+          },
+          body: JSON.stringify({
+            apiKey: "23b1478707ce4a00911b904d62dbb503",
+            taskId
+          })
+        })
+        const data = await res.json()
+        
+        if (data.code === 0) {
+          status = data.data
+          setTaskStatus(status)
+          
+          if (status === "FAILED") {
+            setShowLoading(false)
+            break
+          }
+          
+          if (status === "SUCCESS") {
+            // We'll implement getting the result in the next step
+            setShowLoading(false)
+            break
+          }
+        }
+        
+        // Wait 3 seconds before polling again
+        await new Promise(resolve => setTimeout(resolve, 3000))
+      } catch (error) {
+        console.error('Error checking task status:', error)
+        setShowLoading(false)
+        break
+      }
+    }
+  }
+
+  // API: Run AI App Task
+  const runTask = async () => {
+    setShowLoading(true)
+    setTaskStatus("RUNNING")
+
+    const body = {
+      webappId: "1961348786083840002",
+      apiKey: "23b1478707ce4a00911b904d62dbb503",
+      nodeInfoList: [
+        {
+          nodeId: "19",
+          fieldName: "image",
+          fieldValue: getModelImageUrl(),
+          description: "Reference image"
+        },
+        {
+          nodeId: "10",
+          fieldName: "image",
+          fieldValue: getPoseImageUrl(),
+          description: "Posture image"
+        },
+        {
+          nodeId: "37",
+          fieldName: "prompt",
+          fieldValue: "改变角色姿势，保持人物一致性",
+          description: "Prompt"
+        }
+      ]
+    }
+
+    try {
+      const res = await fetch("https://www.runninghub.ai/task/openapi/ai-app/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      })
+      const data = await res.json()
+      if (data.code === 0 && data.data?.taskId) {
+        const taskId = data.data.taskId
+        setTaskId(taskId)
+        pollTaskStatus(taskId)
+      }
+    } catch (error) {
+      console.error('Error running task:', error)
+      setShowLoading(false)
+    }
+  }
+
   const handleNext = () => {
     const currentIndex = getCurrentStepIndex()
+    
+    // If moving from pose to result, trigger API
+    if (STEPS[currentIndex].key === "pose" && selectedModel && selectedPoses.length > 0) {
+      runTask()
+    } 
+    
     if (currentIndex < STEPS.length - 1) {
       setCurrentStep(STEPS[currentIndex + 1].key)
     }
@@ -176,12 +293,12 @@ export default function HerveStudioDashboard() {
                     <img
                       src={(() => {
                         const poseImages = [
-                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose1.webp",
-                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose2.webp",
-                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose3.webp",
-                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose4.webp",
-                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose5.webp",
-                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose6.webp"
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose1.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose2.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose3.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose4.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose5.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose6.webp"
                         ];
                         const idx = POSES.findIndex(p => p.id === pose.id);
                         return poseImages[idx] || "/poses/1L9A2953.webp";
