@@ -176,12 +176,12 @@ export default function HerveStudioDashboard() {
                     <img
                       src={(() => {
                         const poseImages = [
-                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose1.jpg",
-                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose2.jpg",
-                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose3.jpg",
-                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose4.jpg",
-                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose5.jpg",
-                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose6.jpg"
+                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose1.webp",
+                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose2.webp",
+                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose3.webp",
+                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose4.webp",
+                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose5.webp",
+                          "https://herve-studio-prod.s3.amazonaws.com/poses/pose6.webp"
                         ];
                         const idx = POSES.findIndex(p => p.id === pose.id);
                         return poseImages[idx] || "/poses/1L9A2953.webp";
@@ -214,8 +214,8 @@ export default function HerveStudioDashboard() {
                     <img
                       src={(() => {
                         const clothingImages = [
-                          "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpg",
-                          "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing2.jpg",
+                          "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpeg",
+                          "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing2.webp",
                           "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing3.jpg",
                           "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing4.jpg"
                         ];
