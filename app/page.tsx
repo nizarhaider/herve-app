@@ -4,9 +4,9 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, Sparkles, Camera, Shirt } from "lucide-react"
+import { Loader2, Sparkles, Camera, Shirt, CheckCircle, XCircle } from "lucide-react"
 
-type Step = "model" | "pose" | "clothing"
+type Step = "model" | "pose" | "result" | "clothing"
 type Generation = {
   id: string
   model: string
@@ -19,6 +19,7 @@ type Generation = {
 const STEPS: { key: Step; title: string; icon: any }[] = [
   { key: "model", title: "Select Model", icon: Camera },
   { key: "pose", title: "Select Pose(s)", icon: Sparkles },
+  { key: "result", title: "Processing", icon: Loader2 },
   { key: "clothing", title: "Select Clothing", icon: Shirt },
 ]
 
@@ -64,13 +65,44 @@ const CLOTHING = [
 export default function HerveStudioDashboard() {
   const [currentStep, setCurrentStep] = useState<Step>("model")
   const [selectedModel, setSelectedModel] = useState<string>("")
-  const [selectedPoses, setSelectedPoses] = useState<string[]>([])
+  const [selectedPose, setSelectedPose] = useState<string>("")
   const [selectedClothing, setSelectedClothing] = useState<string>("")
   const [isGenerating, setIsGenerating] = useState(false)
   const [generations, setGenerations] = useState<Generation[]>([])
   const [taskId, setTaskId] = useState<string>("")
   const [taskStatus, setTaskStatus] = useState<string>("")
   const [showLoading, setShowLoading] = useState(false)
+  const [outputImage, setOutputImage] = useState<string>("")
+
+  // API: Fetch task output
+  const fetchTaskOutput = async (taskId: string) => {
+    try {
+      const res = await fetch("https://www.runninghub.ai/task/openapi/outputs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Host": "www.runninghub.ai"
+        },
+        body: JSON.stringify({
+          apiKey: "23b1478707ce4a00911b904d62dbb503",
+          taskId
+        })
+      })
+      
+      const data = await res.json()
+      if (data.code === 0 && data.data?.[0]?.fileUrl) {
+        setOutputImage(data.data[0].fileUrl)
+      } else if (data.code === 805) {
+        console.error('Task failed:', data.data?.failedReason)
+        setTaskStatus("FAILED")
+      }
+    } catch (error) {
+      console.error('Error fetching task output:', error)
+      setTaskStatus("FAILED")
+    } finally {
+      setShowLoading(false)
+    }
+  }
 
   // Helper: get S3 URLs for selected model and pose
   const getModelImageUrl = () => MODELS.find((m) => m.id === selectedModel)?.image || ""
@@ -83,7 +115,7 @@ export default function HerveStudioDashboard() {
       "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose5.webp",
       "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose6.webp"
     ];
-    const idx = POSES.findIndex(p => p.id === selectedPoses[0]);
+    const idx = POSES.findIndex(p => p.id === selectedPose);
     return poseImages[idx] || poseImages[0];
   }
 
@@ -94,7 +126,7 @@ export default function HerveStudioDashboard() {
       case "model":
         return selectedModel !== ""
       case "pose":
-        return selectedPoses.length > 0
+        return selectedPose !== ""
       case "clothing":
         return selectedClothing !== ""
       default:
@@ -131,8 +163,7 @@ export default function HerveStudioDashboard() {
           }
           
           if (status === "SUCCESS") {
-            // We'll implement getting the result in the next step
-            setShowLoading(false)
+            fetchTaskOutput(taskId)
             break
           }
         }
@@ -153,26 +184,20 @@ export default function HerveStudioDashboard() {
     setTaskStatus("RUNNING")
 
     const body = {
-      webappId: "1961348786083840002",
+      webappId: "1963525170214440961",
       apiKey: "23b1478707ce4a00911b904d62dbb503",
       nodeInfoList: [
         {
-          nodeId: "19",
-          fieldName: "image",
-          fieldValue: getModelImageUrl(),
-          description: "Reference image"
-        },
-        {
-          nodeId: "10",
+          nodeId: "39",
           fieldName: "image",
           fieldValue: getPoseImageUrl(),
-          description: "Posture image"
+          description: "Pose Image"
         },
         {
-          nodeId: "37",
-          fieldName: "prompt",
-          fieldValue: "改变角色姿势，保持人物一致性",
-          description: "Prompt"
+          nodeId: "4",
+          fieldName: "image",
+          fieldValue: getModelImageUrl(),
+          description: "Model Image"
         }
       ]
     }
@@ -180,7 +205,9 @@ export default function HerveStudioDashboard() {
     try {
       const res = await fetch("https://www.runninghub.ai/task/openapi/ai-app/run", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify(body)
       })
       const data = await res.json()
@@ -198,10 +225,17 @@ export default function HerveStudioDashboard() {
   const handleNext = () => {
     const currentIndex = getCurrentStepIndex()
     
-    // If moving from pose to result, trigger API
-    if (STEPS[currentIndex].key === "pose" && selectedModel && selectedPoses.length > 0) {
+      // If moving from pose to result, trigger API and show loading
+    if (STEPS[currentIndex].key === "pose" && selectedModel && selectedPose !== "") {
       runTask()
-    } 
+      setCurrentStep("result")
+      return
+    }
+    
+    // Only allow moving to clothing if processing is successful
+    if (currentStep === "result" && taskStatus !== "SUCCESS") {
+      return
+    }
     
     if (currentIndex < STEPS.length - 1) {
       setCurrentStep(STEPS[currentIndex + 1].key)
@@ -223,7 +257,7 @@ export default function HerveStudioDashboard() {
     const newGeneration: Generation = {
       id: `gen-${Date.now()}`,
       model: MODELS.find((m) => m.id === selectedModel)?.name || "",
-      poses: selectedPoses.map((id) => POSES.find((p) => p.id === id)?.name || ""),
+      poses: [POSES.find((p) => p.id === selectedPose)?.name || ""],
   clothing: selectedClothing ? [CLOTHING.find((c) => c.id === selectedClothing)?.name || ""] : [],
   imageUrl: `/placeholder.svg?height=400&width=300&query=AI fashion model wearing ${CLOTHING.find((c) => c.id === selectedClothing)?.name || ""}`,
       createdAt: new Date(),
@@ -233,21 +267,70 @@ export default function HerveStudioDashboard() {
     setIsGenerating(false)
 
     setSelectedModel("")
-    setSelectedPoses([])
-  setSelectedClothing("")
+    setSelectedPose("")
+    setSelectedClothing("")
     setCurrentStep("model")
   }
 
   const togglePose = (poseId: string) => {
-    setSelectedPoses((prev) => (prev.includes(poseId) ? prev.filter((id) => id !== poseId) : [...prev, poseId]))
+    setSelectedPose((prev) => (prev === poseId ? "" : poseId))
   }
 
   const toggleClothing = (clothingId: string) => {
-  setSelectedClothing((prev) => (prev === clothingId ? "" : clothingId))
+    setSelectedClothing((prev: string) => (prev === clothingId ? "" : clothingId))
   }
 
   const renderStepContent = () => {
     switch (currentStep) {
+      case "result":
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[300px]">
+            {taskStatus === "SUCCESS" ? (
+              <>
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center space-x-2 text-green-500 mb-4">
+                    <CheckCircle className="w-8 h-8" />
+                    <p className="text-lg font-semibold">Processing Complete!</p>
+                  </div>
+                  
+                  {outputImage && (
+                    <div className="my-6 max-w-md">
+                      <img 
+                        src={outputImage} 
+                        alt="Generated result" 
+                        className="w-full h-auto rounded-lg shadow-lg"
+                      />
+                    </div>
+                  )}
+                  
+                  <Button onClick={() => setCurrentStep("clothing")} className="mt-4">
+                    Continue to Clothing Selection
+                  </Button>
+                </div>
+              </>
+            ) : taskStatus === "FAILED" ? (
+              <>
+                <div className="flex items-center space-x-2 text-red-500 mb-4">
+                  <XCircle className="w-8 h-8" />
+                  <p className="text-lg font-semibold">Processing Failed</p>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Something went wrong. Please try again.
+                </p>
+                <Button onClick={() => setCurrentStep("pose")} variant="outline">
+                  Go Back
+                </Button>
+              </>
+            ) : (
+              <>
+                <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                <p className="text-lg font-semibold mb-2">Processing your selection...</p>
+                <p className="text-sm text-muted-foreground">Current Status: {taskStatus}</p>
+              </>
+            )}
+          </div>
+        )
+
       case "model":
         return (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -284,7 +367,7 @@ export default function HerveStudioDashboard() {
               <Card
                 key={pose.id}
                 className={`cursor-pointer transition-all hover:shadow-lg ${
-                  selectedPoses.includes(pose.id) ? "ring-2 ring-primary bg-accent/10" : ""
+                  selectedPose === pose.id ? "ring-2 ring-primary bg-accent/10" : ""
                 }`}
                 onClick={() => togglePose(pose.id)}
               >
@@ -308,7 +391,7 @@ export default function HerveStudioDashboard() {
                     />
                   </div>
                   <h3 className="font-semibold text-sm">{pose.name}</h3>
-                  {selectedPoses.includes(pose.id) && <Badge className="text-xs mt-1">Selected</Badge>}
+                  {selectedPose === pose.id && <Badge className="text-xs mt-1">Selected</Badge>}
                 </CardContent>
               </Card>
             ))}
