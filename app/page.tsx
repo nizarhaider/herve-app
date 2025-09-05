@@ -4,9 +4,17 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Loader2, Sparkles, Camera, Shirt, CheckCircle, XCircle } from "lucide-react"
 
-type Step = "model" | "pose" | "result" | "clothing"
+type Step = "model" | "pose" | "result" | "clothing" | "region" | "final-processing" | "complete"
+type TaskStatus = "PENDING" | "RUNNING" | "SUCCESS" | "FAILED" | ""
 type Generation = {
   id: string
   model: string
@@ -21,6 +29,9 @@ const STEPS: { key: Step; title: string; icon: any }[] = [
   { key: "pose", title: "Select Pose(s)", icon: Sparkles },
   { key: "result", title: "Processing", icon: Loader2 },
   { key: "clothing", title: "Select Clothing", icon: Shirt },
+  { key: "region", title: "Select Region", icon: Sparkles },
+  { key: "final-processing", title: "Final Processing", icon: Loader2 },
+  { key: "complete", title: "Complete", icon: CheckCircle },
 ]
 
 const MODELS = [
@@ -70,9 +81,10 @@ export default function HerveStudioDashboard() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [generations, setGenerations] = useState<Generation[]>([])
   const [taskId, setTaskId] = useState<string>("")
-  const [taskStatus, setTaskStatus] = useState<string>("")
+  const [taskStatus, setTaskStatus] = useState<TaskStatus>("")
   const [showLoading, setShowLoading] = useState(false)
   const [outputImage, setOutputImage] = useState<string>("")
+  const [selectedRegion, setSelectedRegion] = useState<"tshirt" | "pants" | "">("")
 
   // API: Fetch task output
   const fetchTaskOutput = async (taskId: string) => {
@@ -129,6 +141,8 @@ export default function HerveStudioDashboard() {
         return selectedPose !== ""
       case "clothing":
         return selectedClothing !== ""
+      case "region":
+        return selectedRegion !== ""
       default:
         return false
     }
@@ -155,7 +169,7 @@ export default function HerveStudioDashboard() {
         
         if (data.code === 0) {
           status = data.data
-          setTaskStatus(status)
+          setTaskStatus(status as TaskStatus)
           
           if (status === "FAILED") {
             setShowLoading(false)
@@ -163,7 +177,10 @@ export default function HerveStudioDashboard() {
           }
           
           if (status === "SUCCESS") {
-            fetchTaskOutput(taskId)
+            await fetchTaskOutput(taskId)
+            if (currentStep === "final-processing") {
+              setCurrentStep("complete")
+            }
             break
           }
         }
@@ -225,7 +242,7 @@ export default function HerveStudioDashboard() {
   const handleNext = () => {
     const currentIndex = getCurrentStepIndex()
     
-      // If moving from pose to result, trigger API and show loading
+    // If moving from pose to result, trigger API and show loading
     if (STEPS[currentIndex].key === "pose" && selectedModel && selectedPose !== "") {
       runTask()
       setCurrentStep("result")
@@ -234,6 +251,23 @@ export default function HerveStudioDashboard() {
     
     // Only allow moving to clothing if processing is successful
     if (currentStep === "result" && taskStatus !== "SUCCESS") {
+      return
+    }
+
+    // If moving from clothing selection to region selection
+    if (currentStep === "clothing" && selectedClothing) {
+      return setCurrentStep("region")
+    }
+
+    // If moving to final processing after region selection
+    if (currentStep === "region" && selectedRegion) {
+      startFinalProcessing()
+      setCurrentStep("final-processing")
+      return
+    }
+
+    // Only allow moving to complete if final processing is successful
+    if (currentStep === "final-processing" && taskStatus !== "SUCCESS") {
       return
     }
     
@@ -278,6 +312,72 @@ export default function HerveStudioDashboard() {
 
   const toggleClothing = (clothingId: string) => {
     setSelectedClothing((prev: string) => (prev === clothingId ? "" : clothingId))
+  }
+
+  const getClothingImageUrl = () => {
+    const clothingImages = [
+      "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpeg",
+      "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing2.webp",
+      "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing3.jpg",
+      "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing4.jpg"
+    ];
+    const idx = CLOTHING.findIndex(c => c.id === selectedClothing);
+    return clothingImages[idx] || clothingImages[0];
+  }
+
+  const startFinalProcessing = async () => {
+    setTaskStatus("RUNNING")
+    setShowLoading(true)
+    
+    const body = {
+      webappId: "1963659857947758593",
+      apiKey: "23b1478707ce4a00911b904d62dbb503",
+      nodeInfoList: [
+        {
+          nodeId: "178",
+          fieldName: "image",
+          fieldValue: outputImage, // Using the generated image from previous step
+          description: "Model Image"
+        },
+        {
+          nodeId: "542",
+          fieldName: "image",
+          fieldValue: getClothingImageUrl(),
+          description: "Garment Image"
+        },
+        {
+          nodeId: "714",
+          fieldName: "text",
+          fieldValue: selectedRegion,
+          description: "Region of Interest"
+        }
+      ]
+    }
+
+    try {
+      const res = await fetch("https://www.runninghub.ai/task/openapi/ai-app/run", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Host": "www.runninghub.ai"
+        },
+        body: JSON.stringify(body)
+      })
+      const data = await res.json()
+      if (data.code === 0 && data.data?.taskId) {
+        const taskId = data.data.taskId
+        setTaskId(taskId)
+        pollTaskStatus(taskId)
+      } else {
+        console.error('Error starting final processing:', data)
+        setTaskStatus("FAILED")
+        setShowLoading(false)
+      }
+    } catch (error) {
+      console.error('Error in final processing:', error)
+      setTaskStatus("FAILED")
+      setShowLoading(false)
+    }
   }
 
   const renderStepContent = () => {
@@ -400,40 +500,138 @@ export default function HerveStudioDashboard() {
 
       case "clothing":
         return (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {CLOTHING.map((item) => (
-              <Card
-                key={item.id}
-                className={`cursor-pointer transition-all hover:shadow-lg ${
-                  selectedClothing === item.id ? "ring-2 ring-primary bg-accent/10" : ""
-                }`}
-                onClick={() => toggleClothing(item.id)}
-              >
-                <CardContent className="p-4">
-                  <div className="aspect-square bg-muted rounded-lg mb-3 flex items-center justify-center">
-                    <img
-                      src={(() => {
-                        const clothingImages = [
-                          "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpeg",
-                          "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing2.webp",
-                          "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing3.jpg",
-                          "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing4.jpg"
-                        ];
-                        const idx = CLOTHING.findIndex(c => c.id === item.id);
-                        return clothingImages[idx] || "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpg";
-                      })()}
-                      alt={item.name}
-                      className="w-full h-full object-cover rounded-lg"
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {CLOTHING.map((item) => (
+                <Card
+                  key={item.id}
+                  className={`cursor-pointer transition-all hover:shadow-lg ${
+                    selectedClothing === item.id ? "ring-2 ring-primary bg-accent/10" : ""
+                  }`}
+                  onClick={() => toggleClothing(item.id)}
+                >
+                  <CardContent className="p-4">
+                    <div className="aspect-square bg-muted rounded-lg mb-3 flex items-center justify-center">
+                      <img
+                        src={(() => {
+                          const clothingImages = [
+                            "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpeg",
+                            "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing2.webp",
+                            "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing3.jpg",
+                            "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing4.jpg"
+                          ];
+                          const idx = CLOTHING.findIndex(c => c.id === item.id);
+                          return clothingImages[idx] || "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpg";
+                        })()}
+                        alt={item.name}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    </div>
+                    <h3 className="font-semibold text-sm">{item.name}</h3>
+                    <Badge variant="secondary" className="text-xs">{item.type}</Badge>
+                    {selectedClothing === item.id && <Badge className="text-xs mt-1">Selected</Badge>}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )
+
+      case "region":
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[300px]">
+            <div className="text-center space-y-4 max-w-md">
+              <h3 className="text-lg font-semibold mb-2">Select Region to Replace</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Choose which part of the model you want to replace with the selected clothing
+              </p>
+              <div className="flex gap-4 justify-center">
+                <Button
+                  variant={selectedRegion === "tshirt" ? "default" : "outline"}
+                  onClick={() => setSelectedRegion("tshirt")}
+                  className="flex-1"
+                >
+                  T-Shirt Area
+                </Button>
+                <Button
+                  variant={selectedRegion === "pants" ? "default" : "outline"}
+                  onClick={() => setSelectedRegion("pants")}
+                  className="flex-1"
+                >
+                  Pants Area
+                </Button>
+              </div>
+            </div>
+          </div>
+        )
+
+      case "final-processing":
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[300px]">
+            {showLoading ? (
+              <div className="flex flex-col items-center">
+                <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                <p className="text-lg font-semibold mb-2">Applying clothing style...</p>
+                <p className="text-sm text-muted-foreground">This may take a few minutes</p>
+              </div>
+            ) : taskStatus === "FAILED" ? (
+              <div className="flex flex-col items-center">
+                <XCircle className="w-8 h-8 text-destructive mb-4" />
+                <p className="text-lg font-semibold mb-2">Processing Failed</p>
+                <p className="text-sm text-muted-foreground mb-4">Something went wrong. Please try again.</p>
+                <Button onClick={() => startFinalProcessing()}>Retry</Button>
+              </div>
+            ) : taskStatus === "SUCCESS" ? (
+              <div className="flex flex-col items-center">
+                <CheckCircle className="w-8 h-8 text-green-500 mb-4" />
+                <p className="text-lg font-semibold mb-2">Processing Complete!</p>
+                {outputImage && (
+                  <div className="my-6 max-w-md">
+                    <img 
+                      src={outputImage} 
+                      alt="Final result with clothing"
+                      className="w-full h-auto rounded-lg shadow-lg" 
                     />
                   </div>
-                  <h3 className="font-semibold text-sm">{item.name}</h3>
-                  <Badge variant="secondary" className="text-xs">
-                    {item.type}
-                  </Badge>
-                  {selectedClothing === item.id && <Badge className="text-xs mt-1">Selected</Badge>}
-                </CardContent>
-              </Card>
-            ))}
+                )}
+              </div>
+            ) : null}
+          </div>
+        )
+        
+      case "complete":
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[300px]">
+            <div className="flex flex-col items-center">
+              <div className="flex items-center space-x-2 text-green-500 mb-4">
+                <CheckCircle className="w-8 h-8" />
+                <p className="text-lg font-semibold">All Done!</p>
+              </div>
+              
+              {outputImage && (
+                <div className="my-6 max-w-md">
+                  <img 
+                    src={outputImage} 
+                    alt="Final result"
+                    className="w-full rounded-lg shadow-lg" 
+                  />
+                </div>
+              )}
+              
+              <Button
+                onClick={() => {
+                  setCurrentStep("model")
+                  setSelectedModel("")
+                  setSelectedPose("")
+                  setSelectedClothing("")
+                  setOutputImage("")
+                  setTaskStatus("")
+                }}
+                className="mt-4"
+              >
+                Start New Generation
+              </Button>
+            </div>
           </div>
         )
     }
