@@ -59,12 +59,28 @@ const MODELS = [
 ]
 
 const POSES = [
-  { id: "pose-1", name: "Standing Confident" },
-  { id: "pose-2", name: "Walking Dynamic" },
-  { id: "pose-3", name: "Sitting Casual" },
-  { id: "pose-4", name: "Profile View" },
-  { id: "pose-5", name: "Action Shot" },
-  { id: "pose-6", name: "Close-up Portrait" },
+  // Female poses
+  { id: "pose-1", name: "Female One Feet Up", type: "Female" },
+  { id: "pose-2", name: "Female Standing Legs Crossed", type: "Female" },
+  { id: "pose-3", name: "Female Turned Around 1", type: "Female" },
+  { id: "pose-4", name: "Female Turned Around 2", type: "Female" },
+  { id: "pose-5", name: "Female Sideways 1", type: "Female" },
+  { id: "pose-6", name: "Female Sideways 2", type: "Female" },
+  { id: "pose-7", name: "Female Standing 1", type: "Female" },
+  { id: "pose-8", name: "Female Standing 2", type: "Female" },
+  { id: "pose-9", name: "Female Standing 3", type: "Female" },
+  { id: "pose-10", name: "Female Standing 4", type: "Female" },
+  { id: "pose-11", name: "Female Standing 5", type: "Female" },
+  { id: "pose-12", name: "Female Standing 6", type: "Female" },
+  // Male poses
+  { id: "pose-13", name: "Male Sideways 1", type: "Male" },
+  { id: "pose-14", name: "Male Sideways 2", type: "Male" },
+  { id: "pose-15", name: "Male Sideways 3", type: "Male" },
+  { id: "pose-16", name: "Male Standing 1", type: "Male" },
+  { id: "pose-17", name: "Male Standing 2", type: "Male" },
+  { id: "pose-18", name: "Male Standing 3", type: "Male" },
+  { id: "pose-19", name: "Male Standing 4", type: "Male" },
+  { id: "pose-20", name: "Male Turned Around", type: "Male" }
 ]
 
 const CLOTHING = [
@@ -121,12 +137,29 @@ export default function HerveStudioDashboard() {
   const getModelImageUrl = () => MODELS.find((m) => m.id === selectedModel)?.image || ""
   const getPoseImageUrl = () => {
     const poseImages = [
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose1.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose2.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose3.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose4.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose5.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose6.webp"
+      // Female poses
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_one_feet_up.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_legs_crossed.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_turned_around_1.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_turned_around_2.webp",
+      // Woman poses
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/woman_sideways_1.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/woman_sideways_2.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/woman_standing_1.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/woman_standing_2.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/woman_standing_3.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/woman_standing_4.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/woman_standing_5.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/woman_standing_6.webp",
+      // Male poses
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_sideways_1.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_sideways_2.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_sideways_3.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_1.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_2.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_3.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_4.webp",
+      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_turned_around.webp"
     ];
     const idx = POSES.findIndex(p => p.id === selectedPose);
     return poseImages[idx] || poseImages[0];
@@ -529,26 +562,45 @@ export default function HerveStudioDashboard() {
                 onClick={() => togglePose(pose.id)}
               >
                 <CardContent className="p-4">
-                  <div className="aspect-[3/4] bg-muted rounded-lg mb-3 flex items-center justify-center">
+                  <div className="min-h-[300px] bg-muted rounded-lg mb-3 flex items-center justify-center p-4">
                     <img
                       src={(() => {
                         const poseImages = [
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose1.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose2.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose3.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose4.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose5.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses/pose6.webp"
+                          // Female poses
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_one_feet_up.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_legs_crossed.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_turned_around_1.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_turned_around_2.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_sideways_1.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_sideways_2.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_1.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_2.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_3.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_4.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_5.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_6.webp",
+                          // Male poses
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_sideways_1.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_sideways_2.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_sideways_3.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_1.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_2.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_3.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_4.webp",
+                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_turned_around.webp"
                         ];
                         const idx = POSES.findIndex(p => p.id === pose.id);
-                        return poseImages[idx] || "/poses/1L9A2953.webp";
+                        return poseImages[idx];
                       })()}
                       alt={pose.name}
-                      className="w-full h-full object-cover rounded-lg"
+                      className="w-auto h-auto max-h-[280px] object-contain rounded-lg"
                     />
                   </div>
                   <h3 className="font-semibold text-sm">{pose.name}</h3>
-                  {selectedPose === pose.id && <Badge className="text-xs mt-1">Selected</Badge>}
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant="secondary" className="text-xs">{pose.type}</Badge>
+                    {selectedPose === pose.id && <Badge className="text-xs">Selected</Badge>}
+                  </div>
                 </CardContent>
               </Card>
             ))}
