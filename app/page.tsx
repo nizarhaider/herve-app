@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select"
 import { Loader2, Sparkles, Camera, Shirt, CheckCircle, XCircle } from "lucide-react"
 
-type Step = "model" | "pose" | "result" | "clothing" | "region" | "final-processing" | "complete"
+type Step = "model" | "pose" | "result" | "clothing" | "region" | "final-processing" | "complete" | "realistic-processing"
 type TaskStatus = "PENDING" | "RUNNING" | "SUCCESS" | "FAILED" | ""
 type Generation = {
   id: string
@@ -32,6 +32,7 @@ const STEPS: { key: Step; title: string; icon: any }[] = [
   { key: "region", title: "Select Region", icon: Sparkles },
   { key: "final-processing", title: "Final Processing", icon: Loader2 },
   { key: "complete", title: "Complete", icon: CheckCircle },
+  { key: "realistic-processing", title: "Enhance Realism", icon: Sparkles },
 ]
 
 const MODELS = [
@@ -143,6 +144,12 @@ export default function HerveStudioDashboard() {
         return selectedClothing !== ""
       case "region":
         return selectedRegion !== ""
+      case "final-processing":
+        return taskStatus === "SUCCESS"
+      case "realistic-processing":
+        return taskStatus === "SUCCESS"
+      case "complete":
+        return true
       default:
         return false
     }
@@ -266,8 +273,15 @@ export default function HerveStudioDashboard() {
       return
     }
 
-    // Only allow moving to complete if final processing is successful
-    if (currentStep === "final-processing" && taskStatus !== "SUCCESS") {
+    // Allow moving to next step when in final-processing and task is successful
+    if (currentStep === "final-processing" && taskStatus === "SUCCESS") {
+      setCurrentStep("complete")
+      return
+    }
+    
+    // Allow moving to next step when in realistic-processing and task is successful
+    if (currentStep === "realistic-processing" && taskStatus === "SUCCESS") {
+      setCurrentStep("complete")
       return
     }
     
@@ -323,6 +337,49 @@ export default function HerveStudioDashboard() {
     ];
     const idx = CLOTHING.findIndex(c => c.id === selectedClothing);
     return clothingImages[idx] || clothingImages[0];
+  }
+
+  const startRealisticProcessing = async () => {
+    setTaskStatus("RUNNING")
+    setShowLoading(true)
+    
+    const body = {
+      webappId: "1963826374476910593",
+      apiKey: "23b1478707ce4a00911b904d62dbb503",
+      nodeInfoList: [
+        {
+          nodeId: "120",
+          fieldName: "image",
+          fieldValue: outputImage,
+          description: "Input Image"
+        }
+      ]
+    }
+
+    try {
+      const res = await fetch("https://www.runninghub.ai/task/openapi/ai-app/run", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Host": "www.runninghub.ai"
+        },
+        body: JSON.stringify(body)
+      })
+      const data = await res.json()
+      if (data.code === 0 && data.data?.taskId) {
+        const taskId = data.data.taskId
+        setTaskId(taskId)
+        pollTaskStatus(taskId)
+      } else {
+        console.error('Error starting realistic processing:', data)
+        setTaskStatus("FAILED")
+        setShowLoading(false)
+      }
+    } catch (error) {
+      console.error('Error in realistic processing:', error)
+      setTaskStatus("FAILED")
+      setShowLoading(false)
+    }
   }
 
   const startFinalProcessing = async () => {
@@ -618,20 +675,86 @@ export default function HerveStudioDashboard() {
                 </div>
               )}
               
-              <Button
-                onClick={() => {
-                  setCurrentStep("model")
-                  setSelectedModel("")
-                  setSelectedPose("")
-                  setSelectedClothing("")
-                  setOutputImage("")
-                  setTaskStatus("")
-                }}
-                className="mt-4"
-              >
-                Start New Generation
-              </Button>
+              <div className="flex gap-4">
+                <Button
+                  onClick={() => {
+                    startRealisticProcessing()
+                    setCurrentStep("realistic-processing")
+                  }}
+                  className="mt-4"
+                >
+                  Make More Realistic
+                </Button>
+                <Button
+                  onClick={() => {
+                    setCurrentStep("model")
+                    setSelectedModel("")
+                    setSelectedPose("")
+                    setSelectedClothing("")
+                    setOutputImage("")
+                    setTaskStatus("")
+                  }}
+                  className="mt-4"
+                  variant="outline"
+                >
+                  Start New Generation
+                </Button>
+              </div>
             </div>
+          </div>
+        )
+        
+      case "realistic-processing":
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[300px]">
+            {showLoading ? (
+              <div className="flex flex-col items-center">
+                <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                <p className="text-lg font-semibold mb-2">Enhancing image realism...</p>
+                <p className="text-sm text-muted-foreground">This may take a few minutes</p>
+              </div>
+            ) : taskStatus === "FAILED" ? (
+              <div className="flex flex-col items-center">
+                <XCircle className="w-8 h-8 text-destructive mb-4" />
+                <p className="text-lg font-semibold mb-2">Enhancement Failed</p>
+                <p className="text-sm text-muted-foreground mb-4">Something went wrong. Please try again.</p>
+                <div className="flex gap-4">
+                  <Button onClick={() => startRealisticProcessing()}>Retry</Button>
+                  <Button onClick={() => setCurrentStep("complete")} variant="outline">Go Back</Button>
+                </div>
+              </div>
+            ) : taskStatus === "SUCCESS" ? (
+              <div className="flex flex-col items-center">
+                <div className="flex items-center space-x-2 text-green-500 mb-4">
+                  <CheckCircle className="w-8 h-8" />
+                  <p className="text-lg font-semibold">Enhancement Complete!</p>
+                </div>
+                
+                {outputImage && (
+                  <div className="my-6 max-w-md">
+                    <img 
+                      src={outputImage} 
+                      alt="Enhanced realistic result"
+                      className="w-full h-auto rounded-lg shadow-lg" 
+                    />
+                  </div>
+                )}
+                
+                <Button
+                  onClick={() => {
+                    setCurrentStep("model")
+                    setSelectedModel("")
+                    setSelectedPose("")
+                    setSelectedClothing("")
+                    setOutputImage("")
+                    setTaskStatus("")
+                  }}
+                  className="mt-4"
+                >
+                  Start New Generation
+                </Button>
+              </div>
+            ) : null}
           </div>
         )
     }
