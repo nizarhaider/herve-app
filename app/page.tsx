@@ -493,9 +493,19 @@ export default function HerveStudioDashboard() {
                     </div>
                   )}
                   
-                  <Button onClick={() => setCurrentStep("clothing")} className="mt-4">
-                    Continue to Clothing Selection
-                  </Button>
+                  <div className="flex gap-4 mt-4">
+                    <Button onClick={() => setCurrentStep("clothing")}>
+                      Continue to Clothing Selection
+                    </Button>
+                    <Button variant="outline" onClick={() => {
+                      setOutputImage("")
+                      setTaskStatus("")
+                      setCurrentStep("pose")
+                    }}>
+                      Regenerate Pose
+                    </Button>
+                  </div>
+
                 </div>
               </>
             ) : taskStatus === "FAILED" ? (
@@ -674,39 +684,54 @@ export default function HerveStudioDashboard() {
           </div>
         )
 
-      case "final-processing":
-        return (
-          <div className="flex flex-col items-center justify-center min-h-[300px]">
-            {showLoading ? (
-              <div className="flex flex-col items-center">
-                <Loader2 className="w-8 h-8 animate-spin mb-4" />
-                <p className="text-lg font-semibold mb-2">Applying clothing style...</p>
-                <p className="text-sm text-muted-foreground">This may take a few minutes</p>
-              </div>
-            ) : taskStatus === "FAILED" ? (
-              <div className="flex flex-col items-center">
-                <XCircle className="w-8 h-8 text-destructive mb-4" />
-                <p className="text-lg font-semibold mb-2">Processing Failed</p>
-                <p className="text-sm text-muted-foreground mb-4">Something went wrong. Please try again.</p>
-                <Button onClick={() => startFinalProcessing()}>Retry</Button>
-              </div>
-            ) : taskStatus === "SUCCESS" ? (
-              <div className="flex flex-col items-center">
-                <CheckCircle className="w-8 h-8 text-green-500 mb-4" />
-                <p className="text-lg font-semibold mb-2">Processing Complete!</p>
-                {outputImage && (
-                  <div className="my-6 max-w-md">
-                    <img 
-                      src={outputImage} 
-                      alt="Final result with clothing"
-                      className="w-full h-auto rounded-lg shadow-lg" 
-                    />
+        case "final-processing":
+          return (
+            <div className="flex flex-col items-center justify-center min-h-[300px]">
+              {showLoading ? (
+                <div className="flex flex-col items-center">
+                  <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                  <p className="text-lg font-semibold mb-2">Applying clothing style...</p>
+                  <p className="text-sm text-muted-foreground">This may take a few minutes</p>
+                </div>
+              ) : taskStatus === "FAILED" ? (
+                <div className="flex flex-col items-center">
+                  <XCircle className="w-8 h-8 text-destructive mb-4" />
+                  <p className="text-lg font-semibold mb-2">Processing Failed</p>
+                  <p className="text-sm text-muted-foreground mb-4">Something went wrong. Please try again.</p>
+                  <Button onClick={() => startFinalProcessing()}>Retry</Button>
+                </div>
+              ) : taskStatus === "SUCCESS" ? (
+                <div className="flex flex-col items-center">
+                  <CheckCircle className="w-8 h-8 text-green-500 mb-4" />
+                  <p className="text-lg font-semibold mb-2">Processing Complete!</p>
+
+                  {outputImage && (
+                    <div className="my-6 max-w-md">
+                      <img 
+                        src={outputImage} 
+                        alt="Final result with clothing"
+                        className="w-full h-auto rounded-lg shadow-lg" 
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex gap-4 mt-4">
+                    <Button onClick={() => setCurrentStep("complete")}>
+                      Continue
+                    </Button>
+                    <Button variant="outline" onClick={() => {
+                      setOutputImage("")
+                      setTaskStatus("")
+                      setCurrentStep("clothing")
+                    }}>
+                      Regenerate Clothing
+                    </Button>
                   </div>
-                )}
-              </div>
-            ) : null}
-          </div>
-        )
+                </div>
+              ) : null}
+            </div>
+          )
+
         
       case "complete":
         return (
