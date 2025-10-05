@@ -44,11 +44,10 @@ const MODELS = [
   { id: "model-3", name: "Anu", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/anu.webp" },
   { id: "model-4", name: "Brianna", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/brianna.webp" },
   { id: "model-5", name: "Chami", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/chami.webp" },
-  { id: "model-6", name: "Chamika", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/chamika.webp" },
-  { id: "model-7", name: "Diyan", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/diyan.webp" },
-  { id: "model-8", name: "Gayan", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/gayan.webp" },
+  { id: "model-6", name: "Chamodhi", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/chamika.webp" },
+  { id: "model-7", name: "Diyana", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/diyan.webp" },
+  { id: "model-8", name: "Gayani", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/gayan.webp" },
   { id: "model-9", name: "Harini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/harini.webp" },
-  { id: "model-10", name: "Kasun", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/kasun.webp" },
   { id: "model-11", name: "Kavi", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/kavi.webp" },
   { id: "model-12", name: "Kavya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/kavya.webp" },
   { id: "model-14", name: "Manoj", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/manoj.webp" },
@@ -56,14 +55,12 @@ const MODELS = [
   { id: "model-16", name: "Oshini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/oshini.webp" },
   { id: "model-17", name: "Prathi", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/prathi.webp" },
   { id: "model-18", name: "Priya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/priya.webp" },
-  { id: "model-19", name: "Ravi", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/ravi.webp" },
-  { id: "model-20", name: "Roshan", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/roshan.webp" },
+  { id: "model-19", name: "Ravini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/ravi.webp" },
   { id: "model-21", name: "Ruwan", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/ruwan.webp" },
   { id: "model-22", name: "Sajith", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/sajith.webp" },
   { id: "model-23", name: "Sanmiri", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/sanmiri.webp" },
-  { id: "model-24", name: "Sapna", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/sapna.webp" },
   { id: "model-25", name: "Supuni", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/supuni.webp" },
-  { id: "model-26", name: "Tharu", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/tharu.webp" },
+  { id: "model-26", name: "Tharu", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/tharu.webp" },
   { id: "model-27", name: "Tharuni", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/tharuni.webp" },
 ]
 
@@ -569,7 +566,6 @@ export default function HerveStudioDashboard() {
                             20vw"
                       className="object-cover object-top rounded-lg"
                       loading="lazy"
-                      placeholder="blur"
                       unoptimized
                     />
                   </div>
