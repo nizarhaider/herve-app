@@ -12,6 +12,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Loader2, Sparkles, Camera, Shirt, CheckCircle, XCircle } from "lucide-react"
+import Image from "next/image"
+import image from "next/image"
+
+
 
 type Step = "model" | "pose" | "result" | "clothing" | "region" | "final-processing" | "complete" | "realistic-processing"
 type TaskStatus = "PENDING" | "RUNNING" | "SUCCESS" | "FAILED" | ""
@@ -36,27 +40,33 @@ const STEPS: { key: Step; title: string; icon: any }[] = [
 ]
 
 const MODELS = [
-  { id: "model-1", name: "Kasun", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/kasun.jpg" },
-  { id: "model-2", name: "Ishara", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/ishara.jpg" },
-  { id: "model-3", name: "Sanduni", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/sanduni.jpg" },
-  { id: "model-4", name: "Chamara", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/chamara.jpg" },
-  { id: "model-5", name: "Dinesh", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/dinesh.jpg" },
-  { id: "model-6", name: "Priyanka", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/priyanka.jpg" },
-  { id: "model-7", name: "Thilini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/thilini.jpg" },
-  { id: "model-8", name: "Nimali", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/nimali.jpg" },
-  { id: "model-9", name: "Ravindu", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/ravindu.jpg" },
-  { id: "model-10", name: "Kavitha", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/kavitha.jpg" },
-  { id: "model-11", name: "Malini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/malini.jpg" },
-  { id: "model-12", name: "Asanka", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/asanka.jpg" },
-  { id: "model-13", name: "Dilani", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/dilani.jpg" },
-  { id: "model-14", name: "Nuwan", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/nuwan.jpg" },
-  { id: "model-15", name: "Roshan", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/roshan.jpg" },
-  { id: "model-16", name: "Sachini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/sachini.jpg" },
-  { id: "model-17", name: "Amaya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/amaya.jpg" },
-  { id: "model-18", name: "Tharindu", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/tharindu.jpg" },
-  { id: "model-19", name: "Nayomi", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/nayomi.jpg" },
-  { id: "model-20", name: "Rashika", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models/rashika.jpg" },
+  { id: "model-1", name: "Aliya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/aliya.webp" },
+  { id: "model-3", name: "Anu", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/anu.webp" },
+  { id: "model-4", name: "Brianna", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/brianna.webp" },
+  { id: "model-5", name: "Chami", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/chami.webp" },
+  { id: "model-6", name: "Chamika", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/chamika.webp" },
+  { id: "model-7", name: "Diyan", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/diyan.webp" },
+  { id: "model-8", name: "Gayan", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/gayan.webp" },
+  { id: "model-9", name: "Harini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/harini.webp" },
+  { id: "model-10", name: "Kasun", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/kasun.webp" },
+  { id: "model-11", name: "Kavi", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/kavi.webp" },
+  { id: "model-12", name: "Kavya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/kavya.webp" },
+  { id: "model-14", name: "Manoj", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/manoj.webp" },
+  { id: "model-15", name: "Menaka", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/menaka.webp" },
+  { id: "model-16", name: "Oshini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/oshini.webp" },
+  { id: "model-17", name: "Prathi", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/prathi.webp" },
+  { id: "model-18", name: "Priya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/priya.webp" },
+  { id: "model-19", name: "Ravi", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/ravi.webp" },
+  { id: "model-20", name: "Roshan", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/roshan.webp" },
+  { id: "model-21", name: "Ruwan", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/ruwan.webp" },
+  { id: "model-22", name: "Sajith", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/sajith.webp" },
+  { id: "model-23", name: "Sanmiri", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/sanmiri.webp" },
+  { id: "model-24", name: "Sapna", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/sapna.webp" },
+  { id: "model-25", name: "Supuni", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/supuni.webp" },
+  { id: "model-26", name: "Tharu", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/tharu.webp" },
+  { id: "model-27", name: "Tharuni", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/tharuni.webp" },
 ]
+
 
 const POSES = [
   // Female poses
@@ -235,26 +245,32 @@ export default function HerveStudioDashboard() {
     }
   }
 
-  // API: Run AI App Task
+  // API CALL 1: MODEL + POSE 
   const runTask = async () => {
     setShowLoading(true)
     setTaskStatus("RUNNING")
 
     const body = {
-      webappId: "1963525170214440961",
+      webappId: "1974790320770650114",
       apiKey: "23b1478707ce4a00911b904d62dbb503",
       nodeInfoList: [
         {
-          nodeId: "39",
-          fieldName: "image",
-          fieldValue: getPoseImageUrl(),
-          description: "Pose Image"
+            nodeId: "109",
+            fieldName: "image",
+            fieldValue: getModelImageUrl(),
+            description: null
         },
         {
-          nodeId: "4",
-          fieldName: "image",
-          fieldValue: getModelImageUrl(),
-          description: "Model Image"
+            nodeId: "122",
+            fieldName: "image",
+            fieldValue: getPoseImageUrl(),
+            description: null
+        },
+        {
+            nodeId: "130",
+            fieldName: "text",
+            fieldValue: "Full body shot of the model wearing a black t-shirt posing in front of camera.",
+            description: null
         }
       ]
     }
@@ -543,11 +559,18 @@ export default function HerveStudioDashboard() {
                 onClick={() => setSelectedModel(model.id)}
               >
                 <CardContent className="p-4">
-                  <div className="aspect-[3/4] bg-muted rounded-lg mb-3 overflow-hidden">
-                    <img
+                  <div className="aspect-[3/4] bg-muted rounded-lg mb-3 overflow-hidden relative">
+                    <Image
                       src={model.image || "/placeholder.svg"}
                       alt={model.name}
-                      className="w-full h-full object-cover object-top"
+                      fill  
+                      sizes="(max-width: 768px) 50vw,
+                            (max-width: 1200px) 25vw,
+                            20vw"
+                      className="object-cover object-top rounded-lg"
+                      loading="lazy"
+                      placeholder="blur"
+                      unoptimized
                     />
                   </div>
                   <h3 className="font-semibold text-sm">{model.name}</h3>
