@@ -4,8 +4,8 @@ import path from "path";
 import sharp from "sharp";
 
 // Folders
-const inputDir = "./public/models_v3_upscaled";   // your downloaded originals
-const outputDir = "./public/models_v3_optimized";
+const inputDir = "./public/poses_v3_phase_1";   
+const outputDir = "./public/poses_v3_optimized"; 
 
 // Ensure output directory exists
 if (!fs.existsSync(outputDir)) {

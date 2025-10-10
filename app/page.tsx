@@ -12,10 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Loader2, Sparkles, Camera, Shirt, CheckCircle, XCircle } from "lucide-react"
-import Image from "next/image"
-import image from "next/image"
-
-
 
 type Step = "model" | "pose" | "result" | "clothing" | "region" | "final-processing" | "complete" | "realistic-processing"
 type TaskStatus = "PENDING" | "RUNNING" | "SUCCESS" | "FAILED" | ""
@@ -40,54 +36,57 @@ const STEPS: { key: Step; title: string; icon: any }[] = [
 ]
 
 const MODELS = [
-  { id: "model-1", name: "Aliya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/aliya.webp" },
-  { id: "model-3", name: "Anu", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/anu.webp" },
-  { id: "model-4", name: "Brianna", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/brianna.webp" },
-  { id: "model-5", name: "Chami", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/chami.webp" },
-  { id: "model-6", name: "Chamodhi", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/chamika.webp" },
-  { id: "model-7", name: "Diyana", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/diyan.webp" },
-  { id: "model-8", name: "Gayani", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/gayan.webp" },
-  { id: "model-9", name: "Harini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/harini.webp" },
-  { id: "model-11", name: "Kavi", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/kavi.webp" },
-  { id: "model-12", name: "Kavya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/kavya.webp" },
-  { id: "model-14", name: "Manoj", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/manoj.webp" },
-  { id: "model-15", name: "Menaka", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/menaka.webp" },
-  { id: "model-16", name: "Oshini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/oshini.webp" },
-  { id: "model-17", name: "Prathi", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/prathi.webp" },
-  { id: "model-18", name: "Priya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/priya.webp" },
-  { id: "model-19", name: "Ravini", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/ravi.webp" },
-  { id: "model-21", name: "Ruwan", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/ruwan.webp" },
-  { id: "model-22", name: "Sajith", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/sajith.webp" },
-  { id: "model-23", name: "Sanmiri", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/sanmiri.webp" },
-  { id: "model-25", name: "Supuni", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/supuni.webp" },
-  { id: "model-26", name: "Tharu", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/tharu.webp" },
-  { id: "model-27", name: "Tharuni", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/tharuni.webp" },
+  { id: "model-aliya", name: "Aliya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/aliya.webp" },
+  { id: "model-anushka", name: "Anushka", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/anushka.webp" },
+  { id: "model-chamika", name: "Chamika", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/chamika.webp" },
+  { id: "model-diyani", name: "Diyani", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/diyani.webp" },
+  { id: "model-lahiru", name: "Lahiru", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/lahiru.webp" },
+  { id: "model-manoj", name: "Manoj", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/manoj.webp" },
+  { id: "model-nimali", name: "Nimali", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/nimali.webp" },
+  { id: "model-priya", name: "Priya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/priya.webp" },
+  { id: "model-ruwan", name: "Ruwan", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/ruwan.webp" },
+  { id: "model-sajith", name: "Sajith", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/sajith.webp" },
+  { id: "model-saroja", name: "Saroja", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/saroja.webp" },
+  { id: "model-tharu", name: "Tharu", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/tharu.webp" },
+  { id: "model-vindya", name: "Vindya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/vindya.webp" },
+  { id: "model-zack", name: "Zack", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/zack.webp" },
 ]
 
-
+// NOTE: POSES kept for metadata (name/type) but actual images come from MODEL_POSES mapping below
 const POSES = [
-  // Female poses
-  { id: "pose-1", name: "Female One Feet Up", type: "Female" },
-  { id: "pose-2", name: "Female Standing Legs Crossed", type: "Female" },
-  { id: "pose-3", name: "Female Turned Around 1", type: "Female" },
-  { id: "pose-4", name: "Female Turned Around 2", type: "Female" },
-  { id: "pose-5", name: "Female Sideways 1", type: "Female" },
-  { id: "pose-6", name: "Female Sideways 2", type: "Female" },
-  { id: "pose-7", name: "Female Standing 1", type: "Female" },
-  { id: "pose-8", name: "Female Standing 2", type: "Female" },
-  { id: "pose-9", name: "Female Standing 3", type: "Female" },
-  { id: "pose-10", name: "Female Standing 4", type: "Female" },
-  { id: "pose-11", name: "Female Standing 5", type: "Female" },
-  { id: "pose-12", name: "Female Standing 6", type: "Female" },
-  // Male poses
-  { id: "pose-13", name: "Male Sideways 1", type: "Male" },
-  { id: "pose-14", name: "Male Sideways 2", type: "Male" },
-  { id: "pose-15", name: "Male Sideways 3", type: "Male" },
-  { id: "pose-16", name: "Male Standing 1", type: "Male" },
-  { id: "pose-17", name: "Male Standing 2", type: "Male" },
-  { id: "pose-18", name: "Male Standing 3", type: "Male" },
-  { id: "pose-19", name: "Male Standing 4", type: "Male" },
-  { id: "pose-20", name: "Male Turned Around", type: "Male" }
+  { id: "upscaled_Aliya_run1.webp", name: "Aliya run1" },
+  { id: "upscaled_Aliya_run2.webp", name: "Aliya run2" },
+  { id: "upscaled_Aliya_run3.webp", name: "Aliya run3" },
+  { id: "upscaled_Anushka_run1.webp", name: "Anushka run1" },
+  { id: "upscaled_Anushka_run2.webp", name: "Anushka run2" },
+  { id: "upscaled_Chamika_run1.webp", name: "Chamika run1" },
+  { id: "upscaled_Chamika_run3.webp", name: "Chamika run3" },
+  { id: "upscaled_Diyani_run1.webp", name: "Diyani run1" },
+  { id: "upscaled_Diyani_run2.webp", name: "Diyani run2" },
+  { id: "upscaled_Diyani_run3.webp", name: "Diyani run3" },
+  { id: "upscaled_Lahiru_run2.webp", name: "Lahiru run2" },
+  { id: "upscaled_Lahiru_run3.webp", name: "Lahiru run3" },
+  { id: "upscaled_Manoj_run1.webp", name: "Manoj run1" },
+  { id: "upscaled_Manoj_run3.webp", name: "Manoj run3" },
+  { id: "upscaled_Nimali_run1.webp", name: "Nimali run1" },
+  { id: "upscaled_Nimali_run2.webp", name: "Nimali run2" },
+  { id: "upscaled_Nimali_run3.webp", name: "Nimali run3" },
+  { id: "upscaled_Priya_run1.webp", name: "Priya run1" },
+  { id: "upscaled_Priya_run2.webp", name: "Priya run2" },
+  { id: "upscaled_Ruwan_run1.webp", name: "Ruwan run1" },
+  { id: "upscaled_Ruwan_run3.webp", name: "Ruwan run3" },
+  { id: "upscaled_Sajith_run1.webp", name: "Sajith run1" },
+  { id: "upscaled_Saroja_run1.webp", name: "Saroja run1" },
+  { id: "upscaled_Saroja_run3.webp", name: "Saroja run3" },
+  { id: "upscaled_Tharu_run1.webp", name: "Tharu run1" },
+  { id: "upscaled_Tharu_run2.webp", name: "Tharu run2" },
+  { id: "upscaled_Tharu_run3.webp", name: "Tharu run3" },
+  { id: "upscaled_Vindya_run1.webp", name: "Vindya run1" },
+  { id: "upscaled_Vindya_run2.webp", name: "Vindya run2" },
+  { id: "upscaled_Vindya_run3.webp", name: "Vindya run3" },
+  { id: "upscaled_Zack_run1.webp", name: "Zack run1" },
+  { id: "upscaled_Zack_run2.webp", name: "Zack run2" },
+  { id: "upscaled_Zack_run3.webp", name: "Zack run3" }
 ]
 
 const CLOTHING = [
@@ -96,6 +95,31 @@ const CLOTHING = [
   { id: "clothing-3", name: "Black Hoodie", type: "Top" },
   { id: "clothing-4", name: "Cargo Pants", type: "Bottom" },
 ]
+
+// Map model names (case-insensitive) to arrays of pregenerated pose filenames found in public/poses_v3_optimized
+// Filenames discovered in the repo's public folder. Fallback to S3 path if not served locally.
+const MODEL_POSES: Record<string, string[]> = {
+  aliya: [
+    "/poses_v3_optimized/upscaled_Aliya_run1.webp",
+    "/poses_v3_optimized/upscaled_Aliya_run2.webp",
+    "/poses_v3_optimized/upscaled_Aliya_run3.webp",
+    "/poses_v3_optimized/upscaled_Aliya_run4.webp"
+  ],
+  anushka: ["/poses_v3_optimized/upscaled_Anushka_run1.webp", "/poses_v3_optimized/upscaled_Anushka_run2.webp", "/poses_v3_optimized/upscaled_Anushka_run3.webp"],
+  chamika: ["/poses_v3_optimized/upscaled_Chamika_run1.webp", "/poses_v3_optimized/upscaled_Chamika_run3.webp", "/poses_v3_optimized/upscaled_Chamika_run2.webp"],
+  diyani: ["/poses_v3_optimized/upscaled_diyani_run1.webp","/poses_v3_optimized/upscaled_diyani_run2.webp","/poses_v3_optimized/upscaled_diyani_run3.webp", "/poses_v3_optimized/upscaled_diyani_run4.webp"],
+  lahiru: ["/poses_v3_optimized/upscaled_Lahiru_run1.webp","/poses_v3_optimized/upscaled_Lahiru_run2.webp", "/poses_v3_optimized/upscaled_Lahiru_run3.webp"],
+  manoj: ["/poses_v3_optimized/upscaled_Manoj_run1.webp","/poses_v3_optimized/upscaled_Manoj_run2.webp", "/poses_v3_optimized/upscaled_Manoj_run3.webp"],
+  nimali: ["/poses_v3_optimized/upscaled_Nimali_run1.webp","/poses_v3_optimized/upscaled_Nimali_run2.webp","/poses_v3_optimized/upscaled_Nimali_run3.webp", "/poses_v3_optimized/upscaled_Nimali_run4.webp"],
+  priya: ["/poses_v3_optimized/upscaled_Priya_run1.webp","/poses_v3_optimized/upscaled_Priya_run2.webp", "/poses_v3_optimized/upscaled_Priya_run3.webp"],
+  ruwan: ["/poses_v3_optimized/upscaled_Ruwan_run1.webp","/poses_v3_optimized/upscaled_Ruwan_run2.webp", "/poses_v3_optimized/upscaled_Ruwan_run3.webp"],
+  sajith: ["/poses_v3_optimized/upscaled_Sajith_run1.webp", "/poses_v3_optimized/upscaled_Sajith_run2.webp"],
+  saroja: ["/poses_v3_optimized/upscaled_Saroja_run1.webp","/poses_v3_optimized/upscaled_Saroja_run2.webp", "/poses_v3_optimized/upscaled_Saroja_run3.webp"],
+  tharu: ["/poses_v3_optimized/upscaled_Tharu_run1.webp","/poses_v3_optimized/upscaled_Tharu_run2.webp","/poses_v3_optimized/upscaled_Tharu_run3.webp", "/poses_v3_optimized/upscaled_Tharu_run4.webp"],
+  vindya: ["/poses_v3_optimized/upscaled_Vindya_run1.webp","/poses_v3_optimized/upscaled_Vindya_run2.webp","/poses_v3_optimized/upscaled_Vindya_run3.webp", "/poses_v3_optimized/upscaled_Vindya_run4.webp"],
+  zack: ["/poses_v3_optimized/upscaled_Zack_run1.webp","/poses_v3_optimized/upscaled_Zack_run2.webp","/poses_v3_optimized/upscaled_Zack_run3.webp", "/poses_v3_optimized/upscaled_Zack_run4.webp"],
+  "default": ["/poses_v3_optimized/upscaled_Zack_run1.webp"]
+}
 
 export default function HerveStudioDashboard() {
   const [currentStep, setCurrentStep] = useState<Step>("model")
@@ -143,34 +167,12 @@ export default function HerveStudioDashboard() {
   // Helper: get S3 URLs for selected model and pose
   const getModelImageUrl = () => MODELS.find((m) => m.id === selectedModel)?.image || ""
   const getPoseImageUrl = () => {
-    const poseImages = [
-      // Female poses
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_one_feet_up.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_legs_crossed.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_turned_around_1.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_turned_around_2.webp",
-      // female poses
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_sideways_1.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_sideways_2.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_1.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_2.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_3.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_4.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_5.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_6.webp",
-      // Male poses
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_sideways_1.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_sideways_2.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_sideways_3.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_1.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_2.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_3.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_4.webp",
-      "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_turned_around.webp"
-    ];
-    const idx = POSES.findIndex(p => p.id === selectedPose);
-    return poseImages[idx] || poseImages[0];
-  }
+      if (!selectedPose) return ""
+      // selectedPose may be a public path like "/poses_v3_optimized/upscaled_Aliya_run1.webp"
+      const filename = selectedPose.split("/").pop() || selectedPose
+      // Use the S3 poses_v3 path as the canonical source
+      return `https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v3/${filename}`
+    }
 
   const getCurrentStepIndex = () => STEPS.findIndex((step) => step.key === currentStep)
 
@@ -242,32 +244,26 @@ export default function HerveStudioDashboard() {
     }
   }
 
-  // API CALL 1: MODEL + POSE 
+  // API: Run AI App Task
   const runTask = async () => {
     setShowLoading(true)
     setTaskStatus("RUNNING")
 
     const body = {
-      webappId: "1974790320770650114",
+      webappId: "1963525170214440961",
       apiKey: "23b1478707ce4a00911b904d62dbb503",
       nodeInfoList: [
         {
-            nodeId: "109",
-            fieldName: "image",
-            fieldValue: getModelImageUrl(),
-            description: null
+          nodeId: "39",
+          fieldName: "image",
+          fieldValue: getPoseImageUrl(),
+          description: "Pose Image"
         },
         {
-            nodeId: "122",
-            fieldName: "image",
-            fieldValue: getPoseImageUrl(),
-            description: null
-        },
-        {
-            nodeId: "130",
-            fieldName: "text",
-            fieldValue: "Full body shot of the model wearing a black t-shirt posing in front of camera.",
-            description: null
+          nodeId: "4",
+          fieldName: "image",
+          fieldValue: getModelImageUrl(),
+          description: "Model Image"
         }
       ]
     }
@@ -295,10 +291,9 @@ export default function HerveStudioDashboard() {
   const handleNext = () => {
     const currentIndex = getCurrentStepIndex()
     
-    // If moving from pose to result, trigger API and show loading
+    // If moving from pose to clothing, skip generation and go directly to clothing selection
     if (STEPS[currentIndex].key === "pose" && selectedModel && selectedPose !== "") {
-      runTask()
-      setCurrentStep("result")
+      setCurrentStep("clothing")
       return
     }
     
@@ -351,7 +346,10 @@ export default function HerveStudioDashboard() {
     const newGeneration: Generation = {
       id: `gen-${Date.now()}`,
       model: MODELS.find((m) => m.id === selectedModel)?.name || "",
-      poses: [POSES.find((p) => p.id === selectedPose)?.name || ""],
+      poses: [
+        // Derive a friendly pose name from the selectedPose (filename)
+        selectedPose ? (selectedPose.split('/').pop() || selectedPose) : ""
+      ],
   clothing: selectedClothing ? [CLOTHING.find((c) => c.id === selectedClothing)?.name || ""] : [],
   imageUrl: `/placeholder.svg?height=400&width=300&query=AI fashion model wearing ${CLOTHING.find((c) => c.id === selectedClothing)?.name || ""}`,
       createdAt: new Date(),
@@ -506,19 +504,9 @@ export default function HerveStudioDashboard() {
                     </div>
                   )}
                   
-                  <div className="flex gap-4 mt-4">
-                    <Button onClick={() => setCurrentStep("clothing")}>
-                      Continue to Clothing Selection
-                    </Button>
-                    <Button variant="outline" onClick={() => {
-                      setOutputImage("")
-                      setTaskStatus("")
-                      setCurrentStep("pose")
-                    }}>
-                      Regenerate Pose
-                    </Button>
-                  </div>
-
+                  <Button onClick={() => setCurrentStep("clothing")} className="mt-4">
+                    Continue to Clothing Selection
+                  </Button>
                 </div>
               </>
             ) : taskStatus === "FAILED" ? (
@@ -556,17 +544,11 @@ export default function HerveStudioDashboard() {
                 onClick={() => setSelectedModel(model.id)}
               >
                 <CardContent className="p-4">
-                  <div className="aspect-[3/4] bg-muted rounded-lg mb-3 overflow-hidden relative">
-                    <Image
+                  <div className="aspect-[3/4] bg-muted rounded-lg mb-3 overflow-hidden">
+                    <img
                       src={model.image || "/placeholder.svg"}
                       alt={model.name}
-                      fill  
-                      sizes="(max-width: 768px) 50vw,
-                            (max-width: 1200px) 25vw,
-                            20vw"
-                      className="object-cover object-top rounded-lg"
-                      loading="lazy"
-                      unoptimized
+                      className="w-full h-full object-cover object-top"
                     />
                   </div>
                   <h3 className="font-semibold text-sm">{model.name}</h3>
@@ -580,59 +562,54 @@ export default function HerveStudioDashboard() {
         )
 
       case "pose":
+        // If no model selected, prompt the user
+        if (!selectedModel) {
+          return (
+            <div className="flex flex-col items-center justify-center min-h-[200px]">
+              <p className="text-center text-muted-foreground">Please select a model first to view pregenerated poses.</p>
+            </div>
+          )
+        }
+
+        // Determine model key (lowercase name) and fetch pose filenames
+        const modelName = MODELS.find(m => m.id === selectedModel)?.name || ""
+        const posesForModel = MODEL_POSES[modelName.toLowerCase()] || MODEL_POSES["default"]
+
         return (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {POSES.map((pose) => (
-              <Card
-                key={pose.id}
-                className={`cursor-pointer transition-all hover:shadow-lg ${
-                  selectedPose === pose.id ? "ring-2 ring-primary bg-accent/10" : ""
-                }`}
-                onClick={() => togglePose(pose.id)}
-              >
-                <CardContent className="p-4">
-                  <div className="min-h-[300px] bg-muted rounded-lg mb-3 flex items-center justify-center p-4">
-                    <img
-                      src={(() => {
-                        const poseImages = [
-                          // Female poses
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_one_feet_up.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_legs_crossed.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_turned_around_1.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_turned_around_2.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_sideways_1.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_sideways_2.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_1.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_2.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_3.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_4.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_5.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/female_standing_6.webp",
-                          // Male poses
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_sideways_1.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_sideways_2.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_sideways_3.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_1.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_2.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_3.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_standing_4.webp",
-                          "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v2/male_turned_around.webp"
-                        ];
-                        const idx = POSES.findIndex(p => p.id === pose.id);
-                        return poseImages[idx];
-                      })()}
-                      alt={pose.name}
-                      className="w-auto h-auto max-h-[280px] object-contain rounded-lg"
-                    />
-                  </div>
-                  <h3 className="font-semibold text-sm">{pose.name}</h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="secondary" className="text-xs">{pose.type}</Badge>
-                    {selectedPose === pose.id && <Badge className="text-xs">Selected</Badge>}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {posesForModel.map((posePath, idx) => {
+              const poseId = `${selectedModel}-pose-${idx}`
+              const isSelected = selectedPose === posePath
+              // Local public path (served by Next) already starts with /
+              const localUrl = posePath
+              // S3 fallback
+              const s3Url = `https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v3/${posePath.split('/').pop()}`
+
+              return (
+                <Card
+                  key={poseId}
+                  className={`cursor-pointer transition-all hover:shadow-lg ${isSelected ? "ring-2 ring-primary bg-accent/10" : ""}`}
+                  onClick={() => setSelectedPose(posePath)}
+                >
+                  <CardContent className="p-4">
+                    <div className="min-h-[300px] bg-muted rounded-lg mb-3 flex items-center justify-center p-4">
+                      <img
+                        // Use S3 as the primary source; fallback to local public path if S3 fails
+                        src={s3Url}
+                        onError={(e: any) => { e.currentTarget.src = localUrl }}
+                        alt={`Pose ${idx + 1}`}
+                        className="w-auto h-auto max-h-[280px] object-contain rounded-lg"
+                      />
+                    </div>
+                    <h3 className="font-semibold text-sm">Pose {idx + 1}</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge variant="secondary" className="text-xs">Pregenerated</Badge>
+                      {isSelected && <Badge className="text-xs">Selected</Badge>}
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
           </div>
         )
 
@@ -703,54 +680,39 @@ export default function HerveStudioDashboard() {
           </div>
         )
 
-        case "final-processing":
-          return (
-            <div className="flex flex-col items-center justify-center min-h-[300px]">
-              {showLoading ? (
-                <div className="flex flex-col items-center">
-                  <Loader2 className="w-8 h-8 animate-spin mb-4" />
-                  <p className="text-lg font-semibold mb-2">Applying clothing style...</p>
-                  <p className="text-sm text-muted-foreground">This may take a few minutes</p>
-                </div>
-              ) : taskStatus === "FAILED" ? (
-                <div className="flex flex-col items-center">
-                  <XCircle className="w-8 h-8 text-destructive mb-4" />
-                  <p className="text-lg font-semibold mb-2">Processing Failed</p>
-                  <p className="text-sm text-muted-foreground mb-4">Something went wrong. Please try again.</p>
-                  <Button onClick={() => startFinalProcessing()}>Retry</Button>
-                </div>
-              ) : taskStatus === "SUCCESS" ? (
-                <div className="flex flex-col items-center">
-                  <CheckCircle className="w-8 h-8 text-green-500 mb-4" />
-                  <p className="text-lg font-semibold mb-2">Processing Complete!</p>
-
-                  {outputImage && (
-                    <div className="my-6 max-w-md">
-                      <img 
-                        src={outputImage} 
-                        alt="Final result with clothing"
-                        className="w-full h-auto rounded-lg shadow-lg" 
-                      />
-                    </div>
-                  )}
-
-                  <div className="flex gap-4 mt-4">
-                    <Button onClick={() => setCurrentStep("complete")}>
-                      Continue
-                    </Button>
-                    <Button variant="outline" onClick={() => {
-                      setOutputImage("")
-                      setTaskStatus("")
-                      setCurrentStep("clothing")
-                    }}>
-                      Regenerate Clothing
-                    </Button>
+      case "final-processing":
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[300px]">
+            {showLoading ? (
+              <div className="flex flex-col items-center">
+                <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                <p className="text-lg font-semibold mb-2">Applying clothing style...</p>
+                <p className="text-sm text-muted-foreground">This may take a few minutes</p>
+              </div>
+            ) : taskStatus === "FAILED" ? (
+              <div className="flex flex-col items-center">
+                <XCircle className="w-8 h-8 text-destructive mb-4" />
+                <p className="text-lg font-semibold mb-2">Processing Failed</p>
+                <p className="text-sm text-muted-foreground mb-4">Something went wrong. Please try again.</p>
+                <Button onClick={() => startFinalProcessing()}>Retry</Button>
+              </div>
+            ) : taskStatus === "SUCCESS" ? (
+              <div className="flex flex-col items-center">
+                <CheckCircle className="w-8 h-8 text-green-500 mb-4" />
+                <p className="text-lg font-semibold mb-2">Processing Complete!</p>
+                {outputImage && (
+                  <div className="my-6 max-w-md">
+                    <img 
+                      src={outputImage} 
+                      alt="Final result with clothing"
+                      className="w-full h-auto rounded-lg shadow-lg" 
+                    />
                   </div>
-                </div>
-              ) : null}
-            </div>
-          )
-
+                )}
+              </div>
+            ) : null}
+          </div>
+        )
         
       case "complete":
         return (
