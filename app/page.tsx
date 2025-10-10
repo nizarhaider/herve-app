@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select"
 import { Loader2, Sparkles, Camera, Shirt, CheckCircle, XCircle } from "lucide-react"
 
-type Step = "model" | "pose" | "result" | "clothing" | "region" | "final-processing" | "complete" | "realistic-processing"
+type Step = "model" | "pose" | "clothing" | "region" | "final-processing" | "complete" | "realistic-processing"
 type TaskStatus = "PENDING" | "RUNNING" | "SUCCESS" | "FAILED" | ""
 type Generation = {
   id: string
@@ -27,7 +27,6 @@ type Generation = {
 const STEPS: { key: Step; title: string; icon: any }[] = [
   { key: "model", title: "Select Model", icon: Camera },
   { key: "pose", title: "Select Pose(s)", icon: Sparkles },
-  { key: "result", title: "Processing", icon: Loader2 },
   { key: "clothing", title: "Select Clothing", icon: Shirt },
   { key: "region", title: "Select Region", icon: Sparkles },
   { key: "final-processing", title: "Final Processing", icon: Loader2 },
@@ -244,49 +243,7 @@ export default function HerveStudioDashboard() {
     }
   }
 
-  // API: Run AI App Task
-  const runTask = async () => {
-    setShowLoading(true)
-    setTaskStatus("RUNNING")
-
-    const body = {
-      webappId: "1963525170214440961",
-      apiKey: "23b1478707ce4a00911b904d62dbb503",
-      nodeInfoList: [
-        {
-          nodeId: "39",
-          fieldName: "image",
-          fieldValue: getPoseImageUrl(),
-          description: "Pose Image"
-        },
-        {
-          nodeId: "4",
-          fieldName: "image",
-          fieldValue: getModelImageUrl(),
-          description: "Model Image"
-        }
-      ]
-    }
-
-    try {
-      const res = await fetch("https://www.runninghub.ai/task/openapi/ai-app/run", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      })
-      const data = await res.json()
-      if (data.code === 0 && data.data?.taskId) {
-        const taskId = data.data.taskId
-        setTaskId(taskId)
-        pollTaskStatus(taskId)
-      }
-    } catch (error) {
-      console.error('Error running task:', error)
-      setShowLoading(false)
-    }
-  }
+  // pose-to-result generation removed: we now use pregenerated poses and only run clothing-related APIs
 
   const handleNext = () => {
     const currentIndex = getCurrentStepIndex()
@@ -297,10 +254,7 @@ export default function HerveStudioDashboard() {
       return
     }
     
-    // Only allow moving to clothing if processing is successful
-    if (currentStep === "result" && taskStatus !== "SUCCESS") {
-      return
-    }
+    // (old processing step removed) continue navigation checks below
 
     // If moving from clothing selection to region selection
     if (currentStep === "clothing" && selectedClothing) {
@@ -483,54 +437,7 @@ export default function HerveStudioDashboard() {
 
   const renderStepContent = () => {
     switch (currentStep) {
-      case "result":
-        return (
-          <div className="flex flex-col items-center justify-center min-h-[300px]">
-            {taskStatus === "SUCCESS" ? (
-              <>
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center space-x-2 text-green-500 mb-4">
-                    <CheckCircle className="w-8 h-8" />
-                    <p className="text-lg font-semibold">Processing Complete!</p>
-                  </div>
-                  
-                  {outputImage && (
-                    <div className="my-6 max-w-md">
-                      <img 
-                        src={outputImage} 
-                        alt="Generated result" 
-                        className="w-full h-auto rounded-lg shadow-lg"
-                      />
-                    </div>
-                  )}
-                  
-                  <Button onClick={() => setCurrentStep("clothing")} className="mt-4">
-                    Continue to Clothing Selection
-                  </Button>
-                </div>
-              </>
-            ) : taskStatus === "FAILED" ? (
-              <>
-                <div className="flex items-center space-x-2 text-red-500 mb-4">
-                  <XCircle className="w-8 h-8" />
-                  <p className="text-lg font-semibold">Processing Failed</p>
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Something went wrong. Please try again.
-                </p>
-                <Button onClick={() => setCurrentStep("pose")} variant="outline">
-                  Go Back
-                </Button>
-              </>
-            ) : (
-              <>
-                <Loader2 className="w-8 h-8 animate-spin mb-4" />
-                <p className="text-lg font-semibold mb-2">Processing your selection...</p>
-                <p className="text-sm text-muted-foreground">Current Status: {taskStatus}</p>
-              </>
-            )}
-          </div>
-        )
+      
 
       case "model":
         return (
@@ -538,23 +445,22 @@ export default function HerveStudioDashboard() {
             {MODELS.map((model) => (
               <Card
                 key={model.id}
-                className={`cursor-pointer transition-all hover:shadow-lg ${
+                className={`cursor-pointer transition-all hover:shadow-lg p-0 ${
                   selectedModel === model.id ? "ring-2 ring-primary bg-accent/10" : ""
                 }`}
                 onClick={() => setSelectedModel(model.id)}
               >
-                <CardContent className="p-4">
-                  <div className="aspect-[3/4] bg-muted rounded-lg mb-3 overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
                     <img
                       src={model.image || "/placeholder.svg"}
                       alt={model.name}
                       className="w-full h-full object-cover object-top"
                     />
+                    <div className="absolute left-2 bottom-2 bg-black/50 text-white text-sm font-semibold px-2 py-1 rounded">
+                      {model.name}
+                    </div>
                   </div>
-                  <h3 className="font-semibold text-sm">{model.name}</h3>
-                  <Badge variant="secondary" className="text-xs">
-                    {model.type}
-                  </Badge>
                 </CardContent>
               </Card>
             ))}
@@ -580,31 +486,29 @@ export default function HerveStudioDashboard() {
             {posesForModel.map((posePath, idx) => {
               const poseId = `${selectedModel}-pose-${idx}`
               const isSelected = selectedPose === posePath
-              // Local public path (served by Next) already starts with /
               const localUrl = posePath
-              // S3 fallback
               const s3Url = `https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v3/${posePath.split('/').pop()}`
 
               return (
                 <Card
                   key={poseId}
-                  className={`cursor-pointer transition-all hover:shadow-lg ${isSelected ? "ring-2 ring-primary bg-accent/10" : ""}`}
+                  className={`cursor-pointer transition-all hover:shadow-lg p-0 ${isSelected ? "ring-2 ring-primary bg-accent/10" : ""}`}
                   onClick={() => setSelectedPose(posePath)}
                 >
-                  <CardContent className="p-4">
-                    <div className="min-h-[300px] bg-muted rounded-lg mb-3 flex items-center justify-center p-4">
+                  <CardContent className="p-0">
+                    <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
                       <img
-                        // Use S3 as the primary source; fallback to local public path if S3 fails
                         src={s3Url}
                         onError={(e: any) => { e.currentTarget.src = localUrl }}
                         alt={`Pose ${idx + 1}`}
-                        className="w-auto h-auto max-h-[280px] object-contain rounded-lg"
+                        className="w-full h-full object-cover object-top"
                       />
-                    </div>
-                    <h3 className="font-semibold text-sm">Pose {idx + 1}</h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="secondary" className="text-xs">Pregenerated</Badge>
-                      {isSelected && <Badge className="text-xs">Selected</Badge>}
+                      <div className="absolute left-2 bottom-2 bg-black/50 text-white text-sm font-semibold px-2 py-1 rounded">
+                        {POSES.find(p => p.id === posePath.split('/').pop())?.name || `Pose ${idx + 1}`}
+                      </div>
+                      {isSelected && (
+                        <div className="absolute right-2 top-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">Selected</div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -625,8 +529,8 @@ export default function HerveStudioDashboard() {
                   }`}
                   onClick={() => toggleClothing(item.id)}
                 >
-                  <CardContent className="p-4">
-                    <div className="aspect-square bg-muted rounded-lg mb-3 flex items-center justify-center">
+                  <CardContent className="p-0">
+                    <div className="relative aspect-square rounded-lg overflow-hidden">
                       <img
                         src={(() => {
                           const clothingImages = [
@@ -639,12 +543,15 @@ export default function HerveStudioDashboard() {
                           return clothingImages[idx] || "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpg";
                         })()}
                         alt={item.name}
-                        className="w-full h-full object-cover rounded-lg"
+                        className="w-full h-full object-cover object-center"
                       />
+                      <div className="absolute left-2 bottom-2 bg-black/50 text-white text-sm font-semibold px-2 py-1 rounded">
+                        {item.name}
+                      </div>
+                      {selectedClothing === item.id && (
+                        <div className="absolute right-2 top-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">Selected</div>
+                      )}
                     </div>
-                    <h3 className="font-semibold text-sm">{item.name}</h3>
-                    <Badge variant="secondary" className="text-xs">{item.type}</Badge>
-                    {selectedClothing === item.id && <Badge className="text-xs mt-1">Selected</Badge>}
                   </CardContent>
                 </Card>
               ))}

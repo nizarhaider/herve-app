@@ -13,7 +13,7 @@ export default function ClothingGenerator({ initialImage }: { initialImage: stri
   const [selectedClothing, setSelectedClothing] = useState<string>("")
   const [selectedRegion, setSelectedRegion] = useState<"tshirt" | "pants" | "">("")
   const [outputImage, setOutputImage] = useState(initialImage)
-  const [taskStatus, setTaskStatus] = useState<"PENDING" | "RUNNING" | "SUCCESS" | "FAILED" | "">("")
+  const [taskStatus, setTaskStatus] = useState<"PENDING" | "RUNNING" | "QUEUED" | "SUCCESS" | "FAILED" | "">("")
   const [showLoading, setShowLoading] = useState(false)
 
   return (
@@ -27,12 +27,14 @@ export default function ClothingGenerator({ initialImage }: { initialImage: stri
             className={`cursor-pointer transition-all hover:shadow-lg ${selectedClothing === item.id ? "ring-2 ring-primary bg-accent/10" : ""}`}
             onClick={() => setSelectedClothing(item.id)}
           >
-            <CardContent className="p-4">
-              <div className="aspect-square bg-muted rounded-lg mb-3 flex items-center justify-center">
-                <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
+            <CardContent className="p-0">
+              <div className="relative aspect-square rounded-lg overflow-hidden">
+                <img src={item.image} alt={item.name} className="w-full h-full object-cover object-center" />
+                <div className="absolute left-2 bottom-2 bg-black/50 text-white text-sm font-semibold px-2 py-1 rounded">{item.name}</div>
+                {selectedClothing === item.id && (
+                  <div className="absolute right-2 top-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">Selected</div>
+                )}
               </div>
-              <h3 className="font-semibold text-sm">{item.name}</h3>
-              <Badge variant="secondary" className="text-xs">{item.type}</Badge>
             </CardContent>
           </Card>
         ))}
