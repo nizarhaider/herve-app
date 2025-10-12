@@ -4,16 +4,10 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Loader2, Sparkles, Camera, Shirt, CheckCircle, XCircle } from "lucide-react"
+import { Loader2, Sparkles, Shirt } from "lucide-react"
+import { MODELS, POSES, MODEL_POSES, CLOTHING, STEPS } from "@/constants/data"
 
-type Step = "model" | "pose" | "clothing" | "region" | "final-processing" | "complete" | "realistic-processing"
+type Step = "model" | "pose" | "clothing" | "result"
 type TaskStatus = "PENDING" | "RUNNING" | "SUCCESS" | "FAILED" | ""
 type Generation = {
   id: string
@@ -24,114 +18,23 @@ type Generation = {
   createdAt: Date
 }
 
-const STEPS: { key: Step; title: string; icon: any }[] = [
-  { key: "model", title: "Select Model", icon: Camera },
-  { key: "pose", title: "Select Pose(s)", icon: Sparkles },
-  { key: "clothing", title: "Select Clothing", icon: Shirt },
-  { key: "region", title: "Select Region", icon: Sparkles },
-  { key: "final-processing", title: "Final Processing", icon: Loader2 },
-  { key: "complete", title: "Complete", icon: CheckCircle },
-  { key: "realistic-processing", title: "Enhance Realism", icon: Sparkles },
-]
+// Mapping from optimized pose filename (.webp) to upscaled filename (.png/.jpg)
 
-const MODELS = [
-  { id: "model-aliya", name: "Aliya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/aliya.webp" },
-  { id: "model-anushka", name: "Anushka", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/anushka.webp" },
-  { id: "model-chamika", name: "Chamika", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/chamika.webp" },
-  { id: "model-diyani", name: "Diyani", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/diyani.webp" },
-  { id: "model-lahiru", name: "Lahiru", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/lahiru.webp" },
-  { id: "model-manoj", name: "Manoj", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/manoj.webp" },
-  { id: "model-nimali", name: "Nimali", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/nimali.webp" },
-  { id: "model-priya", name: "Priya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/priya.webp" },
-  { id: "model-ruwan", name: "Ruwan", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/ruwan.webp" },
-  { id: "model-sajith", name: "Sajith", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/sajith.webp" },
-  { id: "model-saroja", name: "Saroja", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/saroja.webp" },
-  { id: "model-tharu", name: "Tharu", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/tharu.webp" },
-  { id: "model-vindya", name: "Vindya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/vindya.webp" },
-  { id: "model-zack", name: "Zack", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/zack.webp" },
-]
-
-// NOTE: POSES kept for metadata (name/type) but actual images come from MODEL_POSES mapping below
-const POSES = [
-  { id: "upscaled_Aliya_run1.webp", name: "Aliya run1" },
-  { id: "upscaled_Aliya_run2.webp", name: "Aliya run2" },
-  { id: "upscaled_Aliya_run3.webp", name: "Aliya run3" },
-  { id: "upscaled_Anushka_run1.webp", name: "Anushka run1" },
-  { id: "upscaled_Anushka_run2.webp", name: "Anushka run2" },
-  { id: "upscaled_Chamika_run1.webp", name: "Chamika run1" },
-  { id: "upscaled_Chamika_run3.webp", name: "Chamika run3" },
-  { id: "upscaled_Diyani_run1.webp", name: "Diyani run1" },
-  { id: "upscaled_Diyani_run2.webp", name: "Diyani run2" },
-  { id: "upscaled_Diyani_run3.webp", name: "Diyani run3" },
-  { id: "upscaled_Lahiru_run2.webp", name: "Lahiru run2" },
-  { id: "upscaled_Lahiru_run3.webp", name: "Lahiru run3" },
-  { id: "upscaled_Manoj_run1.webp", name: "Manoj run1" },
-  { id: "upscaled_Manoj_run3.webp", name: "Manoj run3" },
-  { id: "upscaled_Nimali_run1.webp", name: "Nimali run1" },
-  { id: "upscaled_Nimali_run2.webp", name: "Nimali run2" },
-  { id: "upscaled_Nimali_run3.webp", name: "Nimali run3" },
-  { id: "upscaled_Priya_run1.webp", name: "Priya run1" },
-  { id: "upscaled_Priya_run2.webp", name: "Priya run2" },
-  { id: "upscaled_Ruwan_run1.webp", name: "Ruwan run1" },
-  { id: "upscaled_Ruwan_run3.webp", name: "Ruwan run3" },
-  { id: "upscaled_Sajith_run1.webp", name: "Sajith run1" },
-  { id: "upscaled_Saroja_run1.webp", name: "Saroja run1" },
-  { id: "upscaled_Saroja_run3.webp", name: "Saroja run3" },
-  { id: "upscaled_Tharu_run1.webp", name: "Tharu run1" },
-  { id: "upscaled_Tharu_run2.webp", name: "Tharu run2" },
-  { id: "upscaled_Tharu_run3.webp", name: "Tharu run3" },
-  { id: "upscaled_Vindya_run1.webp", name: "Vindya run1" },
-  { id: "upscaled_Vindya_run2.webp", name: "Vindya run2" },
-  { id: "upscaled_Vindya_run3.webp", name: "Vindya run3" },
-  { id: "upscaled_Zack_run1.webp", name: "Zack run1" },
-  { id: "upscaled_Zack_run2.webp", name: "Zack run2" },
-  { id: "upscaled_Zack_run3.webp", name: "Zack run3" }
-]
-
-const CLOTHING = [
-  { id: "clothing-1", name: "Classic White T-Shirt", type: "Top" },
-  { id: "clothing-2", name: "Denim Jeans", type: "Bottom" },
-  { id: "clothing-3", name: "Black Hoodie", type: "Top" },
-  { id: "clothing-4", name: "Cargo Pants", type: "Bottom" },
-]
-
-// Map model names (case-insensitive) to arrays of pregenerated pose filenames found in public/poses_v3_optimized
-// Filenames discovered in the repo's public folder. Fallback to S3 path if not served locally.
-const MODEL_POSES: Record<string, string[]> = {
-  aliya: [
-    "/poses_v3_optimized/upscaled_Aliya_run1.webp",
-    "/poses_v3_optimized/upscaled_Aliya_run2.webp",
-    "/poses_v3_optimized/upscaled_Aliya_run3.webp",
-    "/poses_v3_optimized/upscaled_Aliya_run4.webp"
-  ],
-  anushka: ["/poses_v3_optimized/upscaled_Anushka_run1.webp", "/poses_v3_optimized/upscaled_Anushka_run2.webp", "/poses_v3_optimized/upscaled_Anushka_run3.webp"],
-  chamika: ["/poses_v3_optimized/upscaled_Chamika_run1.webp", "/poses_v3_optimized/upscaled_Chamika_run3.webp", "/poses_v3_optimized/upscaled_Chamika_run2.webp"],
-  diyani: ["/poses_v3_optimized/upscaled_diyani_run1.webp","/poses_v3_optimized/upscaled_diyani_run2.webp","/poses_v3_optimized/upscaled_diyani_run3.webp", "/poses_v3_optimized/upscaled_diyani_run4.webp"],
-  lahiru: ["/poses_v3_optimized/upscaled_Lahiru_run1.webp","/poses_v3_optimized/upscaled_Lahiru_run2.webp", "/poses_v3_optimized/upscaled_Lahiru_run3.webp"],
-  manoj: ["/poses_v3_optimized/upscaled_Manoj_run1.webp","/poses_v3_optimized/upscaled_Manoj_run2.webp", "/poses_v3_optimized/upscaled_Manoj_run3.webp"],
-  nimali: ["/poses_v3_optimized/upscaled_Nimali_run1.webp","/poses_v3_optimized/upscaled_Nimali_run2.webp","/poses_v3_optimized/upscaled_Nimali_run3.webp", "/poses_v3_optimized/upscaled_Nimali_run4.webp"],
-  priya: ["/poses_v3_optimized/upscaled_Priya_run1.webp","/poses_v3_optimized/upscaled_Priya_run2.webp", "/poses_v3_optimized/upscaled_Priya_run3.webp"],
-  ruwan: ["/poses_v3_optimized/upscaled_Ruwan_run1.webp","/poses_v3_optimized/upscaled_Ruwan_run2.webp", "/poses_v3_optimized/upscaled_Ruwan_run3.webp"],
-  sajith: ["/poses_v3_optimized/upscaled_Sajith_run1.webp", "/poses_v3_optimized/upscaled_Sajith_run2.webp"],
-  saroja: ["/poses_v3_optimized/upscaled_Saroja_run1.webp","/poses_v3_optimized/upscaled_Saroja_run2.webp", "/poses_v3_optimized/upscaled_Saroja_run3.webp"],
-  tharu: ["/poses_v3_optimized/upscaled_Tharu_run1.webp","/poses_v3_optimized/upscaled_Tharu_run2.webp","/poses_v3_optimized/upscaled_Tharu_run3.webp", "/poses_v3_optimized/upscaled_Tharu_run4.webp"],
-  vindya: ["/poses_v3_optimized/upscaled_Vindya_run1.webp","/poses_v3_optimized/upscaled_Vindya_run2.webp","/poses_v3_optimized/upscaled_Vindya_run3.webp", "/poses_v3_optimized/upscaled_Vindya_run4.webp"],
-  zack: ["/poses_v3_optimized/upscaled_Zack_run1.webp","/poses_v3_optimized/upscaled_Zack_run2.webp","/poses_v3_optimized/upscaled_Zack_run3.webp", "/poses_v3_optimized/upscaled_Zack_run4.webp"],
-  "default": ["/poses_v3_optimized/upscaled_Zack_run1.webp"]
-}
 
 export default function HerveStudioDashboard() {
   const [currentStep, setCurrentStep] = useState<Step>("model")
   const [selectedModel, setSelectedModel] = useState<string>("")
   const [selectedPose, setSelectedPose] = useState<string>("")
   const [selectedClothing, setSelectedClothing] = useState<string>("")
+  const [customClothingImage, setCustomClothingImage] = useState<string>("")
+  const [customClothingFileName, setCustomClothingFileName] = useState<string>("")
   const [isGenerating, setIsGenerating] = useState(false)
   const [generations, setGenerations] = useState<Generation[]>([])
   const [taskId, setTaskId] = useState<string>("")
   const [taskStatus, setTaskStatus] = useState<TaskStatus>("")
   const [showLoading, setShowLoading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(false)
   const [outputImage, setOutputImage] = useState<string>("")
-  const [selectedRegion, setSelectedRegion] = useState<"tshirt" | "pants" | "">("")
 
   // API: Fetch task output
   const fetchTaskOutput = async (taskId: string) => {
@@ -149,8 +52,8 @@ export default function HerveStudioDashboard() {
       })
       
       const data = await res.json()
-      if (data.code === 0 && data.data?.[0]?.fileUrl) {
-        setOutputImage(data.data[0].fileUrl)
+      if (data.code === 0 && data.data?.[1]?.fileUrl) {
+        setOutputImage(data.data[1].fileUrl)
       } else if (data.code === 805) {
         console.error('Task failed:', data.data?.failedReason)
         setTaskStatus("FAILED")
@@ -183,13 +86,7 @@ export default function HerveStudioDashboard() {
         return selectedPose !== ""
       case "clothing":
         return selectedClothing !== ""
-      case "region":
-        return selectedRegion !== ""
-      case "final-processing":
-        return taskStatus === "SUCCESS"
-      case "realistic-processing":
-        return taskStatus === "SUCCESS"
-      case "complete":
+      case "result":
         return true
       default:
         return false
@@ -226,9 +123,7 @@ export default function HerveStudioDashboard() {
           
           if (status === "SUCCESS") {
             await fetchTaskOutput(taskId)
-            if (currentStep === "final-processing") {
-              setCurrentStep("complete")
-            }
+
             break
           }
         }
@@ -254,31 +149,15 @@ export default function HerveStudioDashboard() {
       return
     }
     
-    // (old processing step removed) continue navigation checks below
 
-    // If moving from clothing selection to region selection
+
     if (currentStep === "clothing" && selectedClothing) {
-      return setCurrentStep("region")
-    }
-
-    // If moving to final processing after region selection
-    if (currentStep === "region" && selectedRegion) {
       startFinalProcessing()
-      setCurrentStep("final-processing")
-      return
-    }
-
-    // Allow moving to next step when in final-processing and task is successful
-    if (currentStep === "final-processing" && taskStatus === "SUCCESS") {
-      setCurrentStep("complete")
+      setCurrentStep("result")
       return
     }
     
-    // Allow moving to next step when in realistic-processing and task is successful
-    if (currentStep === "realistic-processing" && taskStatus === "SUCCESS") {
-      setCurrentStep("complete")
-      return
-    }
+    
     
     if (currentIndex < STEPS.length - 1) {
       setCurrentStep(STEPS[currentIndex + 1].key)
@@ -322,11 +201,77 @@ export default function HerveStudioDashboard() {
     setSelectedPose((prev) => (prev === poseId ? "" : poseId))
   }
 
+  const uploadToRunningHub = async (file: File): Promise<string> => {
+    try {
+      const formData = new FormData()
+      formData.append("apiKey", "23b1478707ce4a00911b904d62dbb503")
+      formData.append("file", file)
+      formData.append("fileType", "image")
+
+      const response = await fetch("https://www.runninghub.ai/task/openapi/upload", {
+        method: "POST",
+        headers: {
+          "Host": "www.runninghub.ai"
+        },
+        body: formData
+      })
+
+      const data = await response.json()
+      if (data.code === 0 && data.data?.fileName) {
+        return data.data.fileName
+      } else {
+        throw new Error(data.msg || "Upload failed")
+      }
+    } catch (error) {
+      console.error("Error uploading to RunningHub:", error)
+      throw error
+    }
+  }
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      try {
+        setUploadProgress(true)
+        // Show preview immediately
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setCustomClothingImage(reader.result as string)
+        }
+        reader.readAsDataURL(file)
+
+        // Upload to RunningHub
+        const fileName = await uploadToRunningHub(file)
+        setCustomClothingFileName(fileName)
+        setSelectedClothing("custom")
+      } catch (error) {
+        console.error("Failed to upload clothing image:", error)
+        alert("Failed to upload image. Please try again.")
+        setCustomClothingImage("")
+        setCustomClothingFileName("")
+        setSelectedClothing("")
+      } finally {
+        setUploadProgress(false)
+      }
+    }
+  }
+
   const toggleClothing = (clothingId: string) => {
-    setSelectedClothing((prev: string) => (prev === clothingId ? "" : clothingId))
+    setSelectedClothing((prev: string) => {
+      const newValue = prev === clothingId ? "" : clothingId
+      if (newValue !== "custom") {
+        setCustomClothingImage("")
+        setCustomClothingFileName("")
+      }
+      return newValue
+    })
   }
 
   const getClothingImageUrl = () => {
+    if (selectedClothing === "custom" && customClothingFileName) {
+      // Return the RunningHub fileName for custom uploads
+      return customClothingFileName
+    }
     const clothingImages = [
       "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpeg",
       "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing2.webp",
@@ -337,74 +282,32 @@ export default function HerveStudioDashboard() {
     return clothingImages[idx] || clothingImages[0];
   }
 
-  const startRealisticProcessing = async () => {
-    setTaskStatus("RUNNING")
-    setShowLoading(true)
-    
-    const body = {
-      webappId: "1963826374476910593",
-      apiKey: "23b1478707ce4a00911b904d62dbb503",
-      nodeInfoList: [
-        {
-          nodeId: "120",
-          fieldName: "image",
-          fieldValue: outputImage,
-          description: "Input Image"
-        }
-      ]
-    }
-
-    try {
-      const res = await fetch("https://www.runninghub.ai/task/openapi/ai-app/run", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Host": "www.runninghub.ai"
-        },
-        body: JSON.stringify(body)
-      })
-      const data = await res.json()
-      if (data.code === 0 && data.data?.taskId) {
-        const taskId = data.data.taskId
-        setTaskId(taskId)
-        pollTaskStatus(taskId)
-      } else {
-        console.error('Error starting realistic processing:', data)
-        setTaskStatus("FAILED")
-        setShowLoading(false)
-      }
-    } catch (error) {
-      console.error('Error in realistic processing:', error)
-      setTaskStatus("FAILED")
-      setShowLoading(false)
-    }
-  }
+  
 
   const startFinalProcessing = async () => {
     setTaskStatus("RUNNING")
     setShowLoading(true)
     
     const body = {
-      webappId: "1963659857947758593",
+      webappId: "1961616229582704642",
       apiKey: "23b1478707ce4a00911b904d62dbb503",
       nodeInfoList: [
         {
-          nodeId: "178",
+          nodeId: "61",
           fieldName: "image",
-          fieldValue: outputImage, // Using the generated image from previous step
-          description: "Model Image"
+          fieldValue: (() => {
+            if (!selectedPose) return ""
+            const poseObj = POSES.find(p => p.id === selectedPose.split('/').pop())
+            const upscaled = poseObj?.upscaled || selectedPose.split('/').pop()
+            return `https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/poses_v3_upscaled/${upscaled}`
+          })(),
+          description: "Character image"
         },
         {
-          nodeId: "542",
+          nodeId: "60",
           fieldName: "image",
           fieldValue: getClothingImageUrl(),
-          description: "Garment Image"
-        },
-        {
-          nodeId: "714",
-          fieldName: "text",
-          fieldValue: selectedRegion,
-          description: "Region of Interest"
+          description: "Clothing image"
         }
       ]
     }
@@ -521,6 +424,53 @@ export default function HerveStudioDashboard() {
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Upload Card */}
+              <Card
+                className={`cursor-pointer transition-all hover:shadow-lg ${
+                  selectedClothing === "custom" ? "ring-2 ring-primary bg-accent/10" : ""
+                } ${uploadProgress ? "opacity-70" : ""}`}
+              >
+                <CardContent className="p-0">
+                  <div className="relative aspect-square rounded-lg overflow-hidden">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      disabled={uploadProgress}
+                      className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer disabled:cursor-not-allowed"
+                    />
+                    {customClothingImage ? (
+                      <div className="relative w-full h-full">
+                        <img
+                          src={customClothingImage}
+                          alt="Custom clothing"
+                          className="w-full h-full object-cover object-center"
+                        />
+                        {uploadProgress && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                            <Loader2 className="w-8 h-8 animate-spin text-white" />
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-muted p-4">
+                        <Shirt className="w-8 h-8 mb-2 text-muted-foreground" />
+                        <p className="text-sm text-center text-muted-foreground">
+                          {uploadProgress ? "Uploading..." : "Upload custom clothing image"}
+                        </p>
+                      </div>
+                    )}
+                    <div className="absolute left-2 bottom-2 bg-black/50 text-white text-sm font-semibold px-2 py-1 rounded">
+                      Custom Upload
+                    </div>
+                    {selectedClothing === "custom" && !uploadProgress && (
+                      <div className="absolute right-2 top-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">Selected</div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Predefined Clothing Cards */}
               {CLOTHING.map((item) => (
                 <Card
                   key={item.id}
@@ -559,169 +509,50 @@ export default function HerveStudioDashboard() {
           </div>
         )
 
-      case "region":
-        return (
-          <div className="flex flex-col items-center justify-center min-h-[300px]">
-            <div className="text-center space-y-4 max-w-md">
-              <h3 className="text-lg font-semibold mb-2">Select Region to Replace</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Choose which part of the model you want to replace with the selected clothing
-              </p>
-              <div className="flex gap-4 justify-center">
-                <Button
-                  variant={selectedRegion === "tshirt" ? "default" : "outline"}
-                  onClick={() => setSelectedRegion("tshirt")}
-                  className="flex-1"
-                >
-                  T-Shirt Area
-                </Button>
-                <Button
-                  variant={selectedRegion === "pants" ? "default" : "outline"}
-                  onClick={() => setSelectedRegion("pants")}
-                  className="flex-1"
-                >
-                  Pants Area
-                </Button>
-              </div>
-            </div>
-          </div>
-        )
 
-      case "final-processing":
-        return (
-          <div className="flex flex-col items-center justify-center min-h-[300px]">
-            {showLoading ? (
-              <div className="flex flex-col items-center">
-                <Loader2 className="w-8 h-8 animate-spin mb-4" />
-                <p className="text-lg font-semibold mb-2">Applying clothing style...</p>
-                <p className="text-sm text-muted-foreground">This may take a few minutes</p>
-              </div>
-            ) : taskStatus === "FAILED" ? (
-              <div className="flex flex-col items-center">
-                <XCircle className="w-8 h-8 text-destructive mb-4" />
-                <p className="text-lg font-semibold mb-2">Processing Failed</p>
-                <p className="text-sm text-muted-foreground mb-4">Something went wrong. Please try again.</p>
-                <Button onClick={() => startFinalProcessing()}>Retry</Button>
-              </div>
-            ) : taskStatus === "SUCCESS" ? (
-              <div className="flex flex-col items-center">
-                <CheckCircle className="w-8 h-8 text-green-500 mb-4" />
-                <p className="text-lg font-semibold mb-2">Processing Complete!</p>
-                {outputImage && (
-                  <div className="my-6 max-w-md">
-                    <img 
-                      src={outputImage} 
-                      alt="Final result with clothing"
-                      className="w-full h-auto rounded-lg shadow-lg" 
-                    />
-                  </div>
-                )}
-              </div>
-            ) : null}
-          </div>
-        )
-        
-      case "complete":
+      case "result":
         return (
           <div className="flex flex-col items-center justify-center min-h-[300px]">
             <div className="flex flex-col items-center">
-              <div className="flex items-center space-x-2 text-green-500 mb-4">
-                <CheckCircle className="w-8 h-8" />
-                <p className="text-lg font-semibold">All Done!</p>
-              </div>
-              
-              {outputImage && (
+              {showLoading ? (
+                <div className="flex flex-col items-center">
+                  <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                  <p className="text-lg font-semibold mb-2">Processing...</p>
+                  <p className="text-sm text-muted-foreground">Waiting for result</p>
+                </div>
+              ) : outputImage ? (
                 <div className="my-6 max-w-md">
                   <img 
                     src={outputImage} 
-                    alt="Final result"
+                    alt="Result"
                     className="w-full rounded-lg shadow-lg" 
                   />
                 </div>
+              ) : (
+                <p className="text-muted-foreground">No result yet.</p>
               )}
-              
-              <div className="flex gap-4">
-                <Button
-                  onClick={() => {
-                    startRealisticProcessing()
-                    setCurrentStep("realistic-processing")
-                  }}
-                  className="mt-4"
-                >
-                  Make More Realistic
-                </Button>
-                <Button
-                  onClick={() => {
-                    setCurrentStep("model")
-                    setSelectedModel("")
-                    setSelectedPose("")
-                    setSelectedClothing("")
-                    setOutputImage("")
-                    setTaskStatus("")
-                  }}
-                  className="mt-4"
-                  variant="outline"
-                >
-                  Start New Generation
-                </Button>
-              </div>
+              {outputImage && (
+                <div className="flex gap-4">
+                  <Button
+                    onClick={() => {
+                      setCurrentStep("model")
+                      setSelectedModel("")
+                      setSelectedPose("")
+                      setSelectedClothing("")
+                      setOutputImage("")
+                      setTaskStatus("")
+                    }}
+                    className="mt-4"
+                    variant="outline"
+                  >
+                    Start New Generation
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )
         
-      case "realistic-processing":
-        return (
-          <div className="flex flex-col items-center justify-center min-h-[300px]">
-            {showLoading ? (
-              <div className="flex flex-col items-center">
-                <Loader2 className="w-8 h-8 animate-spin mb-4" />
-                <p className="text-lg font-semibold mb-2">Enhancing image realism...</p>
-                <p className="text-sm text-muted-foreground">This may take a few minutes</p>
-              </div>
-            ) : taskStatus === "FAILED" ? (
-              <div className="flex flex-col items-center">
-                <XCircle className="w-8 h-8 text-destructive mb-4" />
-                <p className="text-lg font-semibold mb-2">Enhancement Failed</p>
-                <p className="text-sm text-muted-foreground mb-4">Something went wrong. Please try again.</p>
-                <div className="flex gap-4">
-                  <Button onClick={() => startRealisticProcessing()}>Retry</Button>
-                  <Button onClick={() => setCurrentStep("complete")} variant="outline">Go Back</Button>
-                </div>
-              </div>
-            ) : taskStatus === "SUCCESS" ? (
-              <div className="flex flex-col items-center">
-                <div className="flex items-center space-x-2 text-green-500 mb-4">
-                  <CheckCircle className="w-8 h-8" />
-                  <p className="text-lg font-semibold">Enhancement Complete!</p>
-                </div>
-                
-                {outputImage && (
-                  <div className="my-6 max-w-md">
-                    <img 
-                      src={outputImage} 
-                      alt="Enhanced realistic result"
-                      className="w-full h-auto rounded-lg shadow-lg" 
-                    />
-                  </div>
-                )}
-                
-                <Button
-                  onClick={() => {
-                    setCurrentStep("model")
-                    setSelectedModel("")
-                    setSelectedPose("")
-                    setSelectedClothing("")
-                    setOutputImage("")
-                    setTaskStatus("")
-                  }}
-                  className="mt-4"
-                >
-                  Start New Generation
-                </Button>
-              </div>
-            ) : null}
-          </div>
-        )
     }
   }
 
