@@ -77,10 +77,66 @@ export const POSES = [
 ]
 
 export const CLOTHING = [
-  { id: "clothing-1", name: "Classic White T-Shirt", type: "Top" },
-  { id: "clothing-2", name: "Denim Jeans", type: "Bottom" },
-  { id: "clothing-3", name: "Black Hoodie", type: "Top" },
-  { id: "clothing-4", name: "Cargo Pants", type: "Bottom" },
+  { 
+    id: "blue-tshirt",
+    name: "Blue T-Shirt",
+    type: "Top",
+    image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/clothes_v3/blue-tshirt.webp"
+  },
+  { 
+    id: "red-tshirt",
+    name: "Red T-Shirt",
+    type: "Top",
+    image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/clothes_v3/red-tshirt.webp"
+  },
+  { 
+    id: "green-tshirt",
+    name: "Green T-Shirt",
+    type: "Top",
+    image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/clothes_v3/green-tshirt.webp"
+  },
+  { 
+    id: "pyjamas",
+    name: "Pyjamas",
+    type: "Full",
+    image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/clothes_v3/pyjamas.webp"
+  },
+  { 
+    id: "patterened-skirt-and-top",
+    name: "Patterned Skirt Set",
+    type: "Full",
+    image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/clothes_v3/patterened-skirt-and-top.webp"
+  },
+  { 
+    id: "womans-black-top-white-bottom",
+    name: "Black Top White Bottom Set",
+    type: "Full",
+    image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/clothes_v3/womans-black-top-white-bottom.webp"
+  },
+  { 
+    id: "womans-green-top-beige-bottom",
+    name: "Green Top Beige Bottom Set",
+    type: "Full",
+    image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/clothes_v3/womans-green-top-beige-bottom.webp"
+  },
+  { 
+    id: "womans-patterened-red-top-and-bottom",
+    name: "Patterned Red Set",
+    type: "Full",
+    image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/clothes_v3/womans-patterened-red-top-and-bottom.webp"
+  },
+  { 
+    id: "mens-top-and-bottom-beige",
+    name: "Men's Beige Set",
+    type: "Full",
+    image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/clothes_v3/mens-top-and-bottom-beige.webp"
+  },
+  { 
+    id: "womans-frock",
+    name: "Women's Frock",
+    type: "Full",
+    image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/clothes_v3/womans-frock.webp"
+  }
 ]
 
 export const MODEL_POSES: Record<string, string[]> = {

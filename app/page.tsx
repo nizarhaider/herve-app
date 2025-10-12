@@ -273,14 +273,8 @@ export default function HerveStudioDashboard() {
       // Return the RunningHub fileName for custom uploads
       return customClothingFileName
     }
-    const clothingImages = [
-      "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpeg",
-      "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing2.webp",
-      "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing3.jpg",
-      "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing4.jpg"
-    ];
-    const idx = CLOTHING.findIndex(c => c.id === selectedClothing);
-    return clothingImages[idx] || clothingImages[0];
+    const clothing = CLOTHING.find(c => c.id === selectedClothing);
+    return clothing?.image || CLOTHING[0].image;
   }
 
   
@@ -427,7 +421,7 @@ export default function HerveStudioDashboard() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {/* Upload Card */}
               <Card
-                className={`cursor-pointer transition-all hover:shadow-lg ${
+                className={`cursor-pointer transition-all hover:shadow-lg p-0 ${
                   selectedClothing === "custom" ? "ring-2 ring-primary bg-accent/10" : ""
                 } ${uploadProgress ? "opacity-70" : ""}`}
               >
@@ -475,7 +469,7 @@ export default function HerveStudioDashboard() {
               {CLOTHING.map((item) => (
                 <Card
                   key={item.id}
-                  className={`cursor-pointer transition-all hover:shadow-lg ${
+                  className={`cursor-pointer transition-all hover:shadow-lg p-0 ${
                     selectedClothing === item.id ? "ring-2 ring-primary bg-accent/10" : ""
                   }`}
                   onClick={() => toggleClothing(item.id)}
@@ -483,18 +477,9 @@ export default function HerveStudioDashboard() {
                   <CardContent className="p-0">
                     <div className="relative aspect-square rounded-lg overflow-hidden">
                       <img
-                        src={(() => {
-                          const clothingImages = [
-                            "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpeg",
-                            "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing2.webp",
-                            "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing3.jpg",
-                            "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing4.jpg"
-                          ];
-                          const idx = CLOTHING.findIndex(c => c.id === item.id);
-                          return clothingImages[idx] || "https://herve-studio-prod.s3.amazonaws.com/clothes/clothing1.jpg";
-                        })()}
+                        src={item.image}
                         alt={item.name}
-                        className="w-full h-full object-cover object-center"
+                        className="w-full h-full object-cover object-top"
                       />
                       <div className="absolute left-2 bottom-2 bg-black/50 text-white text-sm font-semibold px-2 py-1 rounded">
                         {item.name}
@@ -519,7 +504,8 @@ export default function HerveStudioDashboard() {
                 <div className="flex flex-col items-center">
                   <Loader2 className="w-8 h-8 animate-spin mb-4" />
                   <p className="text-lg font-semibold mb-2">Processing...</p>
-                  <p className="text-sm text-muted-foreground">Waiting for result</p>
+                  <p className="text-sm text-muted-foreground mb-2">Waiting for result</p>
+                  <p className="text-sm text-muted-foreground">This may take up to 3 minutes to complete</p>
                 </div>
               ) : outputImage ? (
                 <div className="my-6 max-w-md">
