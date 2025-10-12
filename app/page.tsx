@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Loader2, Sparkles, Shirt } from "lucide-react"
 import { MODELS, POSES, MODEL_POSES, CLOTHING, STEPS } from "@/constants/data"
+import { Notice } from "@/components/notice"
 
 type Step = "model" | "pose" | "clothing" | "result"
 type TaskStatus = "PENDING" | "RUNNING" | "SUCCESS" | "FAILED" | ""
@@ -574,6 +575,7 @@ export default function HerveStudioDashboard() {
       </header>
 
       <div className="container mx-auto px-6 py-8">
+        <Notice />
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             {STEPS.map((step, index) => {
