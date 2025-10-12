@@ -11,7 +11,7 @@ export const STEPS: { key: Step; title: string; icon: any }[] = [
 
 export const MODELS = [
   { id: "model-aliya", name: "Aliya", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/aliya.webp" },
-  { id: "model-anushka", name: "Anushka", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/anushka.webp" },
+  { id: "model-ella", name: "ella", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/ella.webp" },
   { id: "model-chamika", name: "Chamika", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/chamika.webp" },
   { id: "model-diyani", name: "Diyani", type: "Female", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/diyani.webp" },
   { id: "model-lahiru", name: "Lahiru", type: "Male", image: "https://herve-studio-prod.s3.ap-southeast-1.amazonaws.com/models_v3/lahiru.webp" },
@@ -31,9 +31,9 @@ export const POSES = [
   { id: "upscaled_Aliya_run2.webp", upscaled: "upscaled_Aliya_run2.png", name: "Pose 2" },
   { id: "upscaled_Aliya_run3.webp", upscaled: "upscaled_Aliya_run3.png", name: "Pose 3" },
   { id: "upscaled_Aliya_run4.webp", upscaled: "upscaled_Aliya_run4.jpg", name: "Pose 4" },
-  { id: "upscaled_Anushka_run1.webp", upscaled: "upscaled_Anushka_run1.png", name: "Pose 1" },
-  { id: "upscaled_Anushka_run2.webp", upscaled: "upscaled_Anushka_run2.png", name: "Pose 2" },
-  { id: "upscaled_Anushka_run3.webp", upscaled: "upscaled_Anushka_run3.jpg", name: "Pose 3" },
+  { id: "upscaled_ella_run1.webp", upscaled: "upscaled_ella_run1.png", name: "Pose 1" },
+  { id: "upscaled_ella_run2.webp", upscaled: "upscaled_ella_run2.png", name: "Pose 2" },
+  { id: "upscaled_ella_run3.webp", upscaled: "upscaled_ella_run3.jpg", name: "Pose 3" },
   { id: "upscaled_Chamika_run1.webp", upscaled: "upscaled_Chamika_run1.png", name: "Pose 1" },
   { id: "upscaled_Chamika_run2.webp", upscaled: "upscaled_Chamika_run2.png", name: "Pose 2" },
   { id: "upscaled_Chamika_run3.webp", upscaled: "upscaled_Chamika_run3.jpg", name: "Pose 3" },
@@ -90,7 +90,7 @@ export const MODEL_POSES: Record<string, string[]> = {
     "/poses_v3_optimized/upscaled_Aliya_run3.webp",
     "/poses_v3_optimized/upscaled_Aliya_run4.webp"
   ],
-  anushka: ["/poses_v3_optimized/upscaled_Anushka_run1.webp", "/poses_v3_optimized/upscaled_Anushka_run2.webp", "/poses_v3_optimized/upscaled_Anushka_run3.webp"],
+  ella: ["/poses_v3_optimized/upscaled_ella_run1.webp", "/poses_v3_optimized/upscaled_ella_run2.webp", "/poses_v3_optimized/upscaled_ella_run3.webp"],
   chamika: ["/poses_v3_optimized/upscaled_Chamika_run1.webp", "/poses_v3_optimized/upscaled_Chamika_run3.webp", "/poses_v3_optimized/upscaled_Chamika_run2.webp"],
   diyani: ["/poses_v3_optimized/upscaled_diyani_run1.webp","/poses_v3_optimized/upscaled_diyani_run2.webp","/poses_v3_optimized/upscaled_diyani_run3.webp", "/poses_v3_optimized/upscaled_diyani_run4.webp"],
   lahiru: ["/poses_v3_optimized/upscaled_Lahiru_run1.webp","/poses_v3_optimized/upscaled_Lahiru_run2.webp", "/poses_v3_optimized/upscaled_Lahiru_run3.webp"],
